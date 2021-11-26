@@ -1,0 +1,14 @@
+rootProject.name = 'DTSMobile'
+include ':react-native-vector-icons'
+project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
+include ':react-native-config-reader'
+project(':react-native-config-reader').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config-reader/android')
+include ':react-native-config-reader'
+project(':react-native-config-reader').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config-reader/android')
+include ':rn-config-reader'
+project(':rn-config-reader').projectDir = new File(rootProject.projectDir, '../node_modules/rn-config-reader/android')
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
+
+
+

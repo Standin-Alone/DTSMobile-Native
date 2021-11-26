@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DTSMobile</string>
+    <string name="IP_ADDRESS">192.168.100.1</string>
+</resources>
