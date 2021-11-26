@@ -1,4 +1,4 @@
-import React,{Component}from 'react';
+import React,{Component} from 'react';
 import { StyleSheet,Image,KeyboardAvoidingView,View,Text, Alert } from 'react-native';
 
 import { Formik } from 'formik';
@@ -22,7 +22,7 @@ export default class LoginScreen extends Component {
   constructor(props){
     super(props);
   
-    this.props.navigation.navigate('HomeScreen', { screen: 'HomeScreen' });
+    
     this.state = {
         error:false,
         isLoading:false,
@@ -36,7 +36,8 @@ export default class LoginScreen extends Component {
 
 
   // login function
-   handleLogin = (values)=>{
+   handleLogin = (values,navigation)=>{
+  
     
     let data = {
         username:values.username,
@@ -55,7 +56,7 @@ export default class LoginScreen extends Component {
             
            
             this.setState({isLoading:false,error:false});
-            navigation.replace('OTPScreen',{user_id : response.data['user_id'], email : response.data['email']})
+            this.props.navigation.replace('Root',{user_id : response.data['user_id'], email : response.data['email']})
           }else{
         
             this.setState({isLoading:false,error:true})
@@ -76,7 +77,7 @@ export default class LoginScreen extends Component {
 
  
   render(){
-
+    const navigation = this.props.navigation;
     return(
 
 
@@ -86,7 +87,7 @@ export default class LoginScreen extends Component {
           <Formik
             initialValues = {{username:'',password:''}}
             validationSchema = {this.state.validation}
-            onSubmit= {(values)=>this.handleLogin(values)} 
+            onSubmit= {(values)=>this.handleLogin(values,navigation)} 
             // validateOnChange={false}           
           >
           {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) =>(

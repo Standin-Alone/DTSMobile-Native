@@ -6,28 +6,34 @@ import {
 
 
 // 
-import HomeScreen from '../components/HomeScreen';
+
 import LoginScreen from '../components/LoginScreen';
+import OTPScreen from '../components/OTPScreen';
+import Root from './BottomTabNavigator';
 
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 const Stack = createStackNavigator();
 
 function MyStack() {
   return (
-    <Stack.Navigator initialRouteName="Login" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >
-      <Stack.Screen name="Home" component={HomeScreen} />            
+    <Stack.Navigator initialRouteName="Root" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >
+               
       <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />                  
+      <Stack.Screen name="OTP" component={OTPScreen} options={{headerShown:false}} />                  
+      <Stack.Screen name="Root" component={Root} />                  
     </Stack.Navigator>
   );
 }
 
 
 
-export default function Route() {
+export default function Route(){
 
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+    
+   >
     
     <MyStack />
     
