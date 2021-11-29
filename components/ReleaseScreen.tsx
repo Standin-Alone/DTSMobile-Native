@@ -42,6 +42,21 @@ export default class ReleaseScreen extends React.Component {
                 headerTransparent: true,
                 headerTitleStyle: styles.bottomTitle,
                 headerTintColor: Colors.new_color_palette.orange,
+                headerLeft:()=>(
+                    <Pressable
+                    onPress={()=>this.props.navigation.replace('Root')}
+                    style={({ pressed }) => ({
+                    opacity: pressed ? 0.5 : 1,
+                    })}>
+                    <FontAwesome
+                    name="arrow-left"
+                    size={25}
+                    color={Colors.color_palette.orange}
+                    
+                    />
+                </Pressable>
+
+                ),
                 headerRight: () => (
                 <View style={{flexDirection:'row'}}>
                 <Pressable
@@ -330,7 +345,7 @@ render(){
 
 
                 <View style={{ flex: 1 }}>
-              <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top:(Layout.window.height / 100) * 3  }}>
+              <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top:(Layout.window.height / 100) * 1  }}>
                 <Button
                   textStyle={styles.saveText}
                   style={styles.saveButton}

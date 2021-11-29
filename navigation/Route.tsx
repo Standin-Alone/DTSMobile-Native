@@ -1,4 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
+import {  useColorScheme } from 'react-native'
 import  React,{Component} from 'react';
 import {
   CardStyleInterpolators,
@@ -37,7 +38,6 @@ function MyStack() {
     </Root>
   );
 }
-
 
 
 export default function Route(){
