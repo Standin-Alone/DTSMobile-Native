@@ -1,8 +1,8 @@
 
 
 export default {
-  light: '#000',
-  dark:'#fff',
+  light: '#ffffff',
+  dark:'#000000',
   color_palette : {
     yellow_smoke : '#F9F3DF',
     orange_smoke : '#FFC898',

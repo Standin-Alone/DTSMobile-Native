@@ -64,7 +64,7 @@ export default class OTPScreen extends Component {
 
             
               this.setState({isLoading:false,error:false})
-              this.props.navigation.replace('Home');
+              this.props.navigation.replace('Root');
 
             }else{
               resetForm();

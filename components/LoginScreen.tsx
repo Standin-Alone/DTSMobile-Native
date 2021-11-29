@@ -56,7 +56,7 @@ export default class LoginScreen extends Component {
             
            
             this.setState({isLoading:false,error:false});
-            this.props.navigation.replace('Root',{user_id : response.data['user_id'], email : response.data['email']})
+            this.props.navigation.replace('OTP',{user_id : response.data['user_id'], email : response.data['email']})
           }else{
         
             this.setState({isLoading:false,error:true})
