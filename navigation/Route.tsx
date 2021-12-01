@@ -15,6 +15,7 @@ import SplashScreen from '../components/SplashScreen';
 // transaction screens
 import ReceiveScreen from '../components/ReceiveScreen';
 import ReleaseScreen from '../components/ReleaseScreen';
+import HistoryScreen from '../components/HistoryScreen';
 
 
 
@@ -33,7 +34,8 @@ function MyStack() {
         <Stack.Screen name="Authentication" component={SplashScreen} options={{headerShown:false}} />                  
         <Stack.Screen name="Root" component={BottomTabNavigator} options={{headerShown:false}}  />       
         <Stack.Screen name="Receive" component={ReceiveScreen}  />                             
-        <Stack.Screen name="Release" component={ReleaseScreen}  />                             
+        <Stack.Screen name="Release" component={ReleaseScreen}  />
+        <Stack.Screen name="History" component={HistoryScreen}  />
       </Stack.Navigator>
     </Root>
   );

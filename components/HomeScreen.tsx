@@ -1,5 +1,5 @@
 import  React,{Component} from 'react';
-import {StyleSheet,ScrollView,KeyboardAvoidingView,FlatList,Text,View} from 'react-native';
+import {StyleSheet,ScrollView,KeyboardAvoidingView,FlatList,Text,View, Alert} from 'react-native';
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { Fumi  } from 'react-native-textinput-effects';
@@ -8,7 +8,7 @@ import NetInfo from "@react-native-community/netinfo";
 import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import FontAwesome  from 'react-native-vector-icons/FontAwesome';
 export default class HomeScreen extends Component{
     constructor(props) {
         super(props);
@@ -39,7 +39,7 @@ export default class HomeScreen extends Component{
                       document_number: item.document_number,
                       type:  item.type,
                       subject: item.subject,
-                      status: item.status
+                      status: item.active
                     }]});
       
                   })
@@ -62,19 +62,39 @@ export default class HomeScreen extends Component{
         this.handleRefreshData();
     }   
 
+    // old render item
+    // handleRenderItem = ({item}) =>(
+    //     <View style={styles.card}>  
+    //         <Text style={styles.documentNumber}>{item.document_number}</Text>
+    //         <Text style={styles.documentTypeLabel}>Document Type</Text>
+    //         <Text style={styles.itemValue}>{item.type}</Text>
+    //         <Text style={styles.documentTypeLabel}>Subject</Text>
+    //         <Text style={styles.itemValue}>{item.subject}</Text>
+    //         <Text style={styles.documentTypeLabel}>Status</Text>
+    //         <Text style={styles.itemValue}>{item.status}</Text>
+    //         <Text>{'\n'}</Text>
+    //         <View style={{borderBottomWidth:2,borderBottomColor:Colors.new_color_palette.divider}}></View>
+    //     </View>
+    // )   
+
     handleRenderItem = ({item}) =>(
-        <View style={styles.card}>  
-            <Text style={styles.documentNumber}>{item.document_number}</Text>
-            <Text style={styles.documentTypeLabel}>Document Type</Text>
-            <Text style={styles.itemValue}>{item.type}</Text>
-            <Text style={styles.documentTypeLabel}>Subject</Text>
-            <Text style={styles.itemValue}>{item.subject}</Text>
-            <Text style={styles.documentTypeLabel}>Status</Text>
-            <Text style={styles.itemValue}>{item.status}</Text>
-            <Text>{'\n'}</Text>
-            <View style={{borderBottomWidth:2,borderBottomColor:Colors.new_color_palette.divider}}></View>
+      <View style={styles.card}>  
+
+        <View style={{flexDirection:'row'}}>
+           <FontAwesome
+            name="file"
+            size={50}
+            color={Colors.color_palette.orange}
+            style={{ marginLeft: 60,top:10 ,right:0,left:0}}
+          />
+          <Text style={styles.documentNumber}>{item.document_number}</Text>
+          <Text style={styles.viewHistory} onPress={()=>alert('helo')}>View</Text>                             
         </View>
-    )   
+          <Text style={{left:115,fontSize:20,bottom:20}}>OSEC</Text>
+          <Text>{'\n'}</Text>
+          <View style={{borderBottomWidth:2,borderBottomColor:Colors.new_color_palette.divider}}></View>
+      </View>
+  )   
 
 
     //this component will show if flatlist is empty
@@ -172,9 +192,15 @@ const styles = StyleSheet.create({
     documentNumber:{
         top:5,
         color:Colors.new_color_palette.text,
-        fontSize:23,
+        fontSize:20,
         fontWeight:'bold',
-        left:60
+        left:10
+    },
+    viewHistory:{
+      left:50,
+      top:30,
+      color:Colors.new_color_palette.yellow,
+      fontSize:15
     },
     documentTypeLabel:{
       top:5,

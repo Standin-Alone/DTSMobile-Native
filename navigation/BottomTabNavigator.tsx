@@ -106,7 +106,39 @@ export default function BottomTabNavigator() {
       headerTitle:'Scan Route Slip QR Code',
       headerTransparent:true,
       headerTitleStyle:styles.bottomTitle,
-      headerTintColor:Colors.new_color_palette.orange
+      headerTintColor:Colors.new_color_palette.orange,
+      headerRight: () => (            
+        <Pressable
+          onPress={  () => {                    
+                Popup.show({
+                  type: 'confirm',
+                  title: 'Warning',
+                  textBody: 'Do you want to sign out?',
+                  
+                  buttonText: 'Sign Out',
+                  confirmText:'Cancel',                                 
+                  callback: () => {
+                    Popup.hide()
+                    AsyncStorage.clear();
+                    navigation.replace('Authentication');
+                    
+                  },
+                  okButtonStyle:styles.confirmButton,
+                  okButtonTextStyle: styles.confirmButtonText
+                
+                })
+          }}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.5 : 1,
+          })}>
+          <FontAwesome
+            name="sign-out"
+            size={25}
+            color={Colors.color_palette.orange}
+            style={{ marginRight: 15 }}
+          />
+        </Pressable>
+      )
     }}  
     
      name="qrcode" component={QRCodeScreen} />
@@ -116,6 +148,38 @@ export default function BottomTabNavigator() {
       title: 'Profile',
       headerTransparent:true,
       headerTitleStyle:styles.bottomTitle,
+      headerRight: () => (            
+        <Pressable
+          onPress={  () => {                    
+                Popup.show({
+                  type: 'confirm',
+                  title: 'Warning',
+                  textBody: 'Do you want to sign out?',
+                  
+                  buttonText: 'Sign Out',
+                  confirmText:'Cancel',                                 
+                  callback: () => {
+                    Popup.hide()
+                    AsyncStorage.clear();
+                    navigation.replace('Authentication');
+                    
+                  },
+                  okButtonStyle:styles.confirmButton,
+                  okButtonTextStyle: styles.confirmButtonText
+                
+                })
+          }}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.5 : 1,
+          })}>
+          <FontAwesome
+            name="sign-out"
+            size={25}
+            color={Colors.color_palette.orange}
+            style={{ marginRight: 15 }}
+          />
+        </Pressable>
+      ),
       tabBarIcon: ()=> <Icon name="user" size={40}  color={'white'}/>,
     })}  
      name="profile" component={ProfileScreen}/>

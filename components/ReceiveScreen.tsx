@@ -10,6 +10,11 @@ import NetInfo from "@react-native-community/netinfo";
 import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Spinner from 'react-native-spinkit';
+
+
+
+
 export default class ReceiveScreen extends Component{
     constructor(props) {        
         super(props);
@@ -19,12 +24,30 @@ export default class ReceiveScreen extends Component{
             isLoading:false,
             hasPermission:false,
             params:this.props.route.params,
-
+            isAppLoading:false,    
+            spinner:{
+              isVisible:true,
+              color:Colors.color_palette.orange,        
+              size:60
+            },
             receiveFormOptions:{
               headerTitle:'Receive Document',
               headerTransparent:true,
               headerTitleStyle:styles.bottomTitle,
               headerTintColor:Colors.new_color_palette.orange,
+              headerLeft: () => (
+                <Pressable
+                  onPress={() => this.props.navigation.replace('Root')}
+                  style={({pressed}) => ({
+                    opacity: pressed ? 0.5 : 1,
+                  })}>
+                  <FontAwesome
+                    name="arrow-left"
+                    size={25}
+                    color={Colors.color_palette.orange}
+                  />
+                </Pressable>
+              ),
               headerRight: () => (
                       
                 <Pressable
@@ -75,7 +98,7 @@ export default class ReceiveScreen extends Component{
       okButtonStyle:styles.confirmButton,
       okButtonTextStyle: styles.confirmButtonText,
       callback: () => {
-
+        this.setState({isAppLoading:true});
         NetInfo.fetch().then(async (response)=>{          
           let data ={
             document_number: this.state.params.document_info[0].document_number,
@@ -103,6 +126,7 @@ export default class ReceiveScreen extends Component{
                                        
                   callback: () => {                                      
                     Popup.hide()
+                    this.setState({isAppLoading:false});
                     this.navigateToRoot()
                   },              
                 })
@@ -119,11 +143,13 @@ export default class ReceiveScreen extends Component{
                        
                   callback: () => {                                      
                     Popup.hide()
+                    this.setState({isAppLoading:false});
                   },              
                 })
               }
             }).catch((err)=>{
               console.warn(err.response.data)
+              this.setState({isAppLoading:false});
               Popup.hide()
             })
 
@@ -138,7 +164,7 @@ export default class ReceiveScreen extends Component{
               okButtonTextStyle: styles.confirmButtonText,
                     
               callback: () => {                  
-                
+                this.setState({isAppLoading:false});
                 Popup.hide()
               },              
             })
@@ -226,7 +252,11 @@ export default class ReceiveScreen extends Component{
                   </Button>
                   </View>        
                 </View>
-                
+                {this.state.isAppLoading &&
+                  <View style={styles.loading}>
+                    <Spinner  isVisible={this.state.spinner.isVisible} size={this.state.spinner.size} type={'Wave'} color={this.state.spinner.color}/>
+                  </View>
+                }
               </View>    
 
         )
@@ -288,12 +318,12 @@ const styles = StyleSheet.create({
     top:20,
     backgroundColor:Colors.new_color_palette.main_background,  
     width:(Layout.window.width / 100) * 95,
-    height:(Layout.window.height / 100) * 50,
+    height:(Layout.window.height / 100) * 76,
     borderRadius:15,
     minHeight: (Layout.window.height / 100) * 72,    
   },
   innerContainer:{
-    top:100,    
+    top:50,    
   },
   bottomTitle:{
     color:Colors.new_color_palette.orange,
@@ -307,6 +337,16 @@ const styles = StyleSheet.create({
   },
   confirmButtonText:{  
     color:Colors.new_color_palette.orange,    
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor:'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',    
   }
 
 });

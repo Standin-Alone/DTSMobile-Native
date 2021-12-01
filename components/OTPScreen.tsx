@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
       width:300,
       height:300,       
     },
-    otp: { textAlign: "center", fontSize: 25,color:Colors.dark.background },
-    otp_desc: { textAlign: "center", fontSize: 18,marginBottom:20,color:Colors.dark.background},
+    otp: { textAlign: "center", fontSize: 25,color:Colors.dark },
+    otp_desc: { textAlign: "center", fontSize: 18,marginBottom:20,color:Colors.dark},
     loginTextInput:{  
       color:Colors.color_palette.orange_smoke,
       width: (Layout.window.width / 100 ) * 90,
