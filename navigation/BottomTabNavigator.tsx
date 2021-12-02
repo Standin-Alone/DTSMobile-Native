@@ -25,13 +25,13 @@ export default function BottomTabNavigator() {
         tabBarActiveBackgroundColor: Colors.new_color_palette.orange,
         tabBarInactiveBackgroundColor: 'red',
         tabBarActiveTintColor: Colors.new_color_palette.yellow,
-        tabBarInactiveTintColor: "#222222",  
+        tabBarInactiveTintColor: "#222222",          
       }}
+
+      
 
       tabBar={(props) => (
         <BottomFabBar
-
-
           // Add Shadow for active tab bar button
           focusedButtonStyle={{
             shadowColor: '#000',

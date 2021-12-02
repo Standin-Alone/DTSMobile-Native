@@ -19,6 +19,8 @@ import * as ipConfig from '../ipconfig';
 export default class HistoryScreen extends Component {
   constructor(props) {
     super(props);
+    
+    console.warn(this.props.route.params);
     this.state = {
       isLoading: false,
       refreshing: false,
@@ -65,7 +67,7 @@ export default class HistoryScreen extends Component {
   render_timeline = rowData => {
     return (
       <View style={{flex: 1}}>
-        <Text style={styles.cardHeader}>
+        <Text style={[styles.cardHeader]}>
           {' '}
           <Icon
             name="user"
@@ -92,14 +94,18 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.remarks} {'\n'}
         </Text>
-        <Text style={styles.cardHeader}>
+        <Text style={[styles.cardHeader]}>
           {' '}
           <Icon
             name="superpowers"
             size={10}
             color={Colors.color_palette.orange}
           />{' '}
-          {rowData.type} {'\n'}
+          
+            {rowData.type}
+          
+
+           
         </Text>
       </View>
     );
@@ -111,7 +117,7 @@ export default class HistoryScreen extends Component {
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Timeline
-            data={history}
+            data={this.state.history}
             dotSize={10}
             options={{
               refreshControl: (
@@ -179,7 +185,6 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 10,
     width: 90,
-
     textAlign: 'center',
     backgroundColor: Colors.new_color_palette.yellow,
     color: 'white',

@@ -1,5 +1,5 @@
 import  React,{Component} from 'react';
-import {StyleSheet,ScrollView,KeyboardAvoidingView,FlatList,Text,View, Alert} from 'react-native';
+import {StyleSheet,ScrollView,KeyboardAvoidingView,FlatList,Text,View, TouchableOpacity} from 'react-native';
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
 import { Fumi  } from 'react-native-textinput-effects';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome  from 'react-native-vector-icons/FontAwesome';
+import { Card } from 'react-native-elements';
 export default class HomeScreen extends Component{
     constructor(props) {
         super(props);
@@ -32,11 +33,13 @@ export default class HomeScreen extends Component{
               axios.post(ipConfig.ipAddress+'MobileApp/Mobile/my_documents',payload).then((response)=>{
       
                 if(response.data['Message'] == 'true'){
-                  console.warn( response.data['doc_info'])
+                  
                   
                   response.data['doc_info'].map((item)=>{
+                  
                     this.setState({data:[{
                       document_number: item.document_number,
+                      info_region: item.info_region,
                       type:  item.type,
                       subject: item.subject,
                       status: item.active
@@ -78,19 +81,22 @@ export default class HomeScreen extends Component{
     // )   
 
     handleRenderItem = ({item}) =>(
+      
       <View style={styles.card}>  
-
-        <View style={{flexDirection:'row'}}>
+        <View style={{flexDirection:'row',width:'100%'}}>
            <FontAwesome
             name="file"
             size={50}
             color={Colors.color_palette.orange}
             style={{ marginLeft: 60,top:10 ,right:0,left:0}}
           />
-          <Text style={styles.documentNumber}>{item.document_number}</Text>
-          <Text style={styles.viewHistory} onPress={()=>alert('helo')}>View</Text>                             
-        </View>
-          <Text style={{left:115,fontSize:20,bottom:20}}>OSEC</Text>
+          <Text style={styles.documentNumber} adjustsFontSizeToFit>{item.subject}</Text>
+          <TouchableOpacity  onPress={()=>this.props.navigation.navigate('History',{document_info:[item]})}> 
+              <Text style={styles.viewHistory} >View</Text>                             
+          </TouchableOpacity>
+          
+        </View> 
+          <Text style={{left:115,fontSize:10,bottom:20,color:Colors.new_color_palette.text}} adjustsFontSizeToFit>{item.subject}</Text>
           <Text>{'\n'}</Text>
           <View style={{borderBottomWidth:2,borderBottomColor:Colors.new_color_palette.divider}}></View>
       </View>
@@ -192,15 +198,16 @@ const styles = StyleSheet.create({
     documentNumber:{
         top:5,
         color:Colors.new_color_palette.text,
-        fontSize:20,
+        fontSize:15,
         fontWeight:'bold',
         left:10
     },
     viewHistory:{
-      left:50,
-      top:30,
+      
+      top:20,
       color:Colors.new_color_palette.yellow,
-      fontSize:15
+      fontSize:15,
+      alignSelf:'flex-end',
     },
     documentTypeLabel:{
       top:5,
