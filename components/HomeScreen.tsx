@@ -139,7 +139,7 @@ export default class HomeScreen extends Component {
           style={{marginLeft: 60, top: 10, right: 0, left: 0}}
         />
         <Text style={styles.documentNumber} adjustsFontSizeToFit>
-          {item.subject}
+          {item.document_number}
         </Text>
         <TouchableOpacity
           onPress={() =>
