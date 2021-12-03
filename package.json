@@ -29,6 +29,7 @@
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-linear-gradient": "^2.5.6",
+    "react-native-paper": "^4.10.1",
     "react-native-popup-confirm-toast": "^2.0.3",
     "react-native-push-notification": "^8.1.1",
     "react-native-safe-area-context": "^3.3.2",

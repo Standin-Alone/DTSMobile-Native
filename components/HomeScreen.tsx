@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
     top: 20,
     color: Colors.new_color_palette.yellow,
     fontSize: 15,
+    left:30,
     alignSelf: 'flex-end',
   },
   documentTypeLabel: {
