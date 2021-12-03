@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "885048180512",
+    "project_id": "dts-mobile-86a93",
+    "storage_bucket": "dts-mobile-86a93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885048180512:android:1a07678117ebc18a17a145",
+        "android_client_info": {
+          "package_name": "com.dtsmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885048180512-67p7iu0cae4ng6fvos78v0c9g47bk2cg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBSaIXfap6WcprK5q3m3akqnfSg_4NqjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885048180512-67p7iu0cae4ng6fvos78v0c9g47bk2cg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

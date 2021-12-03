@@ -64,9 +64,29 @@ export default class HistoryScreen extends Component {
 
   };
 
-  render_timeline = rowData => {
+  render_timeline = (rowData,index) => {
+    
     return (
       <View style={{flex: 1}}>
+        <Text style={[[styles.cardHeader,
+            { backgroundColor:'white',
+              alignSelf:'flex-start',
+              padding:10,
+              borderRadius:20,
+              color: rowData.type == 'Released' ? '#489FB5' : '#32965D',
+              borderColor: rowData.type == 'Released' ? '#489FB5' : '#32965D',
+              borderWidth:1,
+              marginBottom:20
+            }]]}>
+          {' '}
+          <Icon
+            name={rowData.type == 'Released' ? "envelope-open-o" : "check"}
+            size={10}
+            color={ rowData.type == 'Released' ? '#489FB5' : '#32965D'}
+          />{' '}
+          
+            {rowData.type + ' By'}                   
+        </Text>
         <Text style={[styles.cardHeader]}>
           {' '}
           <Icon
@@ -94,19 +114,7 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.remarks} {'\n'}
         </Text>
-        <Text style={[styles.cardHeader]}>
-          {' '}
-          <Icon
-            name="superpowers"
-            size={10}
-            color={Colors.color_palette.orange}
-          />{' '}
-          
-            {rowData.type}
-          
-
-           
-        </Text>
+        
       </View>
     );
   };
@@ -186,8 +194,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     width: 90,
     textAlign: 'center',
-    backgroundColor: Colors.new_color_palette.yellow,
-    color: 'white',
+    borderColor: Colors.new_color_palette.yellow,
+    backgroundColor:'white',
+    borderWidth:1,
+    color: Colors.new_color_palette.yellow,
     padding: 7,
     borderRadius: 13,
   },

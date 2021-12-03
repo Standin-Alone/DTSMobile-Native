@@ -4,7 +4,7 @@ import  React,{Component} from 'react';
 import {
   CardStyleInterpolators,
 } from '@react-navigation/stack';
-
+import PushNotification from "react-native-push-notification";
 
 // 
 
@@ -22,7 +22,7 @@ import HistoryScreen from '../components/HistoryScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import { Root, Popup } from 'react-native-popup-confirm-toast';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-
+import io from "socket.io-client";
 const Stack = createStackNavigator();
 
 function MyStack() {
@@ -43,6 +43,9 @@ function MyStack() {
 
 
 export default function Route(){
+
+    
+ 
 
 
   return (
