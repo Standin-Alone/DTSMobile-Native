@@ -118,15 +118,8 @@ export default class ReleaseScreen extends React.Component {
   pickDocument = async () => {
     const results = await DocumentPicker.pickMultiple({
       allowMultiSelection: true,
-      type: [
-        DocumentPicker.types.docx,
-        DocumentPicker.types.doc,
-        DocumentPicker.types.xls,
-        DocumentPicker.types.xlsx,
-        DocumentPicker.types.pdf,
-        DocumentPicker.types.doc,
-        DocumentPicker.types.csv,
-        DocumentPicker.types.plainText,
+      type: [        
+        DocumentPicker.types.pdf,        
       ],
     });
     console.warn(results);
@@ -136,9 +129,13 @@ export default class ReleaseScreen extends React.Component {
 
       // check if file is less than 10 mb
       if(item_file.size <= 10000000){
-        const convert_to_base64 = await RNFS.readFile(item_file.uri,'base64');      
+        const convert_to_base64 = await RNFS.readFile(item_file.uri,'base64');    
+        // check file if duplicate
+        const check_file = this.state.base64_files.find((data)=>data.name === item_file.name);
+        if(!check_file){
+          this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: convert_to_base64,name:item_file.name,path:item_file.uri,type:item_file.type}]}));
+        }
         
-        this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: convert_to_base64,name:item_file.name,path:item_file.uri}]}));
 
       }else{
         ToastAndroid.showWithGravity('Your file should not exceed 10MB.',ToastAndroid.SHORT,ToastAndroid.BOTTOM);
@@ -167,7 +164,7 @@ export default class ReleaseScreen extends React.Component {
       if(item_file.fileSize <= 10000000){
         
         
-        this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: item_file.base64,name:item_file.fileName,path:item_file.uri}]}));
+        this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: item_file.base64,name:item_file.fileName,path:item_file.uri,type:item_file.type}]}));
 
       }else{
         ToastAndroid.showWithGravity('Your file should not exceed 10MB.',ToastAndroid.SHORT,ToastAndroid.BOTTOM);
@@ -190,7 +187,7 @@ export default class ReleaseScreen extends React.Component {
   // handle release button
   handleRelease = async () => {
     
-
+    
     if (this.state.selectedRecipients.length != 0) {
       // show confirmation before receive the document
       Popup.show({
@@ -203,30 +200,49 @@ export default class ReleaseScreen extends React.Component {
         okButtonTextStyle: styles.confirmButtonText,
         callback: () => {
           this.setState({isAppLoading: true});
+          Popup.hide();
           NetInfo.fetch().then(async response => {
         
 
             // Initialize Form Data
             let fd = new FormData();
 
-            fd.append('document_number',this.state.params.document_info[0].document_number);
-            fd.append('office_code',await AsyncStorage.getItem('office_code'));
-            fd.append('user_id', await AsyncStorage.getItem('user_id'));
-            fd.append('full_name',await AsyncStorage.getItem('full_name'));
-            fd.append('info_division', await AsyncStorage.getItem('division'));
-            fd.append('info_service', await AsyncStorage.getItem('service'));
-            fd.append('recipients_office_code', this.state.selectedRecipients);
-            fd.append('file_attachments' ,this.state.base64_files);
+            fd.append('document_number',JSON.stringify(this.state.params.document_info[0].document_number));
+            fd.append('office_code',JSON.stringify(await AsyncStorage.getItem('office_code')));
+            fd.append('user_id', JSON.stringify(await AsyncStorage.getItem('user_id')));
+            fd.append('full_name',JSON.stringify(await AsyncStorage.getItem('full_name')));
+            fd.append('info_division', JSON.stringify(await AsyncStorage.getItem('division')));
+            fd.append('info_service', JSON.stringify(await AsyncStorage.getItem('service')));
+            fd.append('recipients_office_code',JSON.stringify( this.state.selectedRecipients));                        
+            fd.append('file_attachments' ,JSON.stringify(this.state.base64_files))
+            
+            
 
+            // let data = {
+            //   document_number:this.state.params.document_info[0].document_number,
+            //   office_code:await AsyncStorage.getItem('office_code'),
+            //   user_id:await AsyncStorage.getItem('user_id'),
+            //   full_name:await AsyncStorage.getItem('full_name'),
+            //   info_division: await AsyncStorage.getItem('division'),
+            //   info_service:await AsyncStorage.getItem('service'),
+            //   recipients_office_code:this.state.selectedRecipients,
+            //   file_attachments:this.state.base64_files
+            // }
            
             if (response.isConnected) {
               // perform axios here
               axios
                 .post(
                   ipConfig.ipAddress + 'MobileApp/Mobile/release_document',
-                  fd,
+                  fd
+                  ,{
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }  
+                  }      
                 )
                 .then(response => {
+                  console.warn(response);
                   this.setState({isAppLoading: false});
                   if (response.data['Message'] == 'true') {
                     Popup.show({
@@ -240,7 +256,7 @@ export default class ReleaseScreen extends React.Component {
                       callback: () => {
                         this.setState({isAppLoading: false});
                         Popup.hide();
-                        this.state.navigation.replace('Root');
+                        // this.props.navigation.replace('Root');
                       },
                     });
                   } else {
@@ -261,9 +277,10 @@ export default class ReleaseScreen extends React.Component {
                     });
                   }
                 })
-                .catch(err => {
+                .catch((error) => {
+                  
                   this.setState({isAppLoading: false});
-                  console.warn(err.response.data);
+                  console.log(error.response.data);
                   Popup.hide();
                 });
             } else {
@@ -372,14 +389,16 @@ export default class ReleaseScreen extends React.Component {
                   </Text> */}
                     { this.state.base64_files.length != 0  ?
                       <List.Accordion
+                      
                       expanded={true}
-                      style={[styles.detailTitle,{backgroundColor:Colors.new_color_palette.main_background}]}                    
+                      style={[styles.detailTitle,{backgroundColor:Colors.new_color_palette.main_background,overflow:'scroll'}]}                    
                       titleStyle={{color:Colors.primary}}
                       title=" Uploaded Files (Optional):"
                       >
                         {
                           this.state.base64_files.map((item_base64) => (
                             <List.Item  
+                            
                                 titleStyle={styles.file_item} 
                                 title={item_base64.name}                                 
                                 left={()=><Icon name="eye" color={Colors.warning}  size={30} onPress={()=>this.viewFile(item_base64.path)} />} 
@@ -423,7 +442,8 @@ export default class ReleaseScreen extends React.Component {
               </ScrollView>
               {/* ))} */}
             </View>        
-
+        
+        {/* Footer Start here */}
         <View style={{flex: 1}}></View>
         <View
           style={{
