@@ -73,8 +73,8 @@ export default class HistoryScreen extends Component {
               alignSelf:'flex-start',
               padding:10,
               borderRadius:20,
-              color: rowData.type == 'Released' ? '#489FB5' : '#32965D',
-              borderColor: rowData.type == 'Released' ? '#489FB5' : '#32965D',
+              color: rowData.type == 'Released' ? Colors.primary : Colors.green,
+              borderColor: rowData.type == 'Released' ? Colors.primary : Colors.green,
               borderWidth:1,
               marginBottom:20
             }]]}>
@@ -82,7 +82,7 @@ export default class HistoryScreen extends Component {
           <Icon
             name={rowData.type == 'Released' ? "envelope-open-o" : "check"}
             size={10}
-            color={ rowData.type == 'Released' ? '#489FB5' : '#32965D'}
+            color={ rowData.type == 'Released' ? Colors.primary : Colors.green}
           />{' '}
           
             {rowData.type + ' By'}                   

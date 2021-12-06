@@ -24,5 +24,7 @@ export default {
   danger:'#ff5b57cc',
   warning: '#FF9B05',
   success: '#66BB6A',
+  primary: '#489FB5',
+  green:'#32965D'
   
 };
