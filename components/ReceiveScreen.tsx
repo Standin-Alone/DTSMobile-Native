@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text, View, Pressable} from 'react-native';
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
+import SocketConnection from '../constants/SocketConnection';
 import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -107,15 +108,14 @@ export default class ReceiveScreen extends Component {
                 data,
               )
               .then(async response => {
-                let socket = io('http://172.17.150.112' + ':7980', {
-                  transports: ['websocket'],
-                });
+        
 
-                console.warn(response);
+             
 
                 if (response.data['Message'] == 'true') {
-                  socket.emit('push notification', {
-                    channel: '937ed108-36f3-11ec-8ce3-fc3497a38746',
+                    console.warn(response.data['doc_info'][0].sender_office_code);
+                  SocketConnection.socket.emit('push notification', {
+                    channel: response.data['doc_info'][0].sender_office_code,
                     message:
                       data.info_division + ' sucessfully received the document',
                   });
@@ -216,9 +216,9 @@ export default class ReceiveScreen extends Component {
                 <View style={styles.titleView}>
                   {/* <Text style={styles.titleValue}>ICTS SysAdd</Text> */}
                   <Text style={styles.titleValue}>
-                    {item.INFO_DIVISION}
+                    {item.sender_division}
                     {'\n'}
-                    {item.INFO_SERVICE}
+                    {item.sender_service}
                   </Text>
                 </View>
 

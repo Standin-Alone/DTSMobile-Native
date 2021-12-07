@@ -1,16 +1,11 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View, Pressable, RefreshControl} from 'react-native';
 
-import Images from '../constants/Images';
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
-import {Formik} from 'formik';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {Fumi} from 'react-native-textinput-effects';
-import Button from 'apsl-react-native-button';
+import Loader from '../constants/Loader';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Timeline from 'react-native-timeline-flatlist';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
@@ -19,7 +14,7 @@ import * as ipConfig from '../ipconfig';
 export default class HistoryScreen extends Component {
   constructor(props) {
     super(props);
-    
+
     console.warn(this.props.route.params);
     this.state = {
       isLoading: false,
@@ -59,33 +54,36 @@ export default class HistoryScreen extends Component {
     //fetch next data
   };
 
-  renderFooter = () => {
+  renderFooter = () => {};
 
-
-  };
-
-  render_timeline = (rowData,index) => {
-    
+  render_timeline = (rowData, index) => {
     return (
       <View style={{flex: 1}}>
-        <Text style={[[styles.cardHeader,
-            { backgroundColor:'white',
-              alignSelf:'flex-start',
-              padding:10,
-              borderRadius:20,
-              color: rowData.type == 'Released' ? Colors.primary : Colors.green,
-              borderColor: rowData.type == 'Released' ? Colors.primary : Colors.green,
-              borderWidth:1,
-              marginBottom:20
-            }]]}>
+        <Text
+          style={[
+            [
+              styles.cardHeader,
+              {
+                backgroundColor: 'white',
+                alignSelf: 'flex-start',
+                padding: 10,
+                borderRadius: 20,
+                color:
+                  rowData.type == 'Released' ? Colors.primary : Colors.green,
+                borderColor:
+                  rowData.type == 'Released' ? Colors.primary : Colors.green,
+                borderWidth: 1,
+                marginBottom: 20,
+              },
+            ],
+          ]}>
           {' '}
           <Icon
-            name={rowData.type == 'Released' ? "envelope-open-o" : "check"}
+            name={rowData.type == 'Released' ? 'envelope-open-o' : 'check'}
             size={10}
-            color={ rowData.type == 'Released' ? Colors.primary : Colors.green}
+            color={rowData.type == 'Released' ? Colors.primary : Colors.green}
           />{' '}
-          
-            {rowData.type + ' By'}                   
+          {rowData.type + ' By'}
         </Text>
         <Text style={[styles.cardHeader]}>
           {' '}
@@ -112,9 +110,8 @@ export default class HistoryScreen extends Component {
             size={10}
             color={Colors.color_palette.orange}
           />{' '}
-          {rowData.remarks} {'\n'}
+          {rowData.remarks == null ? 'None' : rowData.remarks} {'\n'}
         </Text>
-        
       </View>
     );
   };
@@ -195,8 +192,8 @@ const styles = StyleSheet.create({
     width: 90,
     textAlign: 'center',
     borderColor: Colors.new_color_palette.yellow,
-    backgroundColor:'white',
-    borderWidth:1,
+    backgroundColor: 'white',
+    borderWidth: 1,
     color: Colors.new_color_palette.yellow,
     padding: 7,
     borderRadius: 13,

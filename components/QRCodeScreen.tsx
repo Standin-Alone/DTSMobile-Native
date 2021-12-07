@@ -44,12 +44,13 @@ export default class QRCodeScreen extends Component{
         full_name : await AsyncStorage.getItem('full_name'),
         user_id : await AsyncStorage.getItem('user_id'),        
       } 
-      console.warn(payload);
+      
 
       if(this.state.isBarcodeRead){
       NetInfo.fetch().then( (response)=>{
         if(response.isConnected){
           axios.post(ipConfig.ipAddress+'MobileApp/Mobile/get_scanned_document',payload).then((response)=>{
+            console.warn(response.data);
             this.setState({isBarcodeRead:false});
             if(response.data['Message'] == 'true'){
 

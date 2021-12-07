@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
   FlatList,
   Text,
   View,
@@ -17,18 +15,22 @@ import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Card} from 'react-native-elements';
-import PushNotification from 'react-native-push-notification';
-import {Alert} from 'react-native';
-import io from 'socket.io-client';
 
+
+import Loader from '../constants/Loader';
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
+      isAppLoading:false,
       refreshing: false,
       currentPage: 1,
+      spinner: {
+        isVisible: true,
+        color: Colors.color_palette.orange,
+        size: 60,
+      }
     };
   }
 
@@ -53,6 +55,7 @@ export default class HomeScreen extends Component {
                       type: item.type,
                       subject: item.subject,
                       status: item.active,
+                      rcl_status: item.rcl_status,
                     },
                   ],
                 });
@@ -70,45 +73,7 @@ export default class HomeScreen extends Component {
   };
 
   componentDidMount() {
-    let socket = io('http://172.17.150.112' + ':7980', {
-      transports: ['websocket'],
-    });
-    socket.on('connect', msg => {
-      socket.on('get notification', async message => {
-        let user_id = await AsyncStorage.getItem('user_id');
-        if (message.channel == user_id) {
-          console.warn('connected');
-
-          // create channel for notification
-          PushNotification.createChannel({
-            channelId: message.channel,
-            channelName: message.channel,
-            soundName: 'default',
-            importance: 4,
-            vibrate: true,
-          });
-
-          // create channel for notification
-          PushNotification.localNotification({
-            channelId: message.channel, // (required)
-            channelName: message.channel,
-            autoCancel: true,
-
-            subText: 'Local Notification Demo',
-            title: 'Document Tracking System',
-            message: message.message,
-            vibrate: true,
-            vibration: 300,
-            playSound: true,
-            soundName: 'default',
-          });
-        }
-      });
-    });
-
-    socket.on('connect_error', err => {
-      console.warn(err);
-    });
+ 
 
     this.setState({refreshing: true});
     this.handleRefreshData();
@@ -239,8 +204,13 @@ export default class HomeScreen extends Component {
                 }}
               />
             </View>
-          </View>
+          </View>         
         </View>
+
+        {this.state.isAppLoading && (
+          Loader.loader(this.state.spinner)
+        )}  
+      
       </View>
     );
   }

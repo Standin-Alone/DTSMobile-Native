@@ -23,6 +23,9 @@ import BottomTabNavigator from './BottomTabNavigator';
 import { Root, Popup } from 'react-native-popup-confirm-toast';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import io from "socket.io-client";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SocketConnection from '../constants/SocketConnection';
+
 const Stack = createStackNavigator();
 
 function MyStack() {
@@ -44,8 +47,45 @@ function MyStack() {
 
 export default function Route(){
 
-    
- 
+
+  
+  SocketConnection.socket.on('connect', msg => {
+    SocketConnection.socket.on('get notification', async message => {
+      let user_id = await AsyncStorage.getItem('user_id');
+      let office_code = await AsyncStorage.getItem('office_code');
+      if (message.channel == office_code) {
+        console.warn('connected');
+
+        // create channel for notification
+        PushNotification.createChannel({
+          channelId: message.channel,
+          channelName: message.channel,
+          soundName: 'default',
+          importance: 4,
+          vibrate: true,
+        });
+
+        // create channel for notification
+        PushNotification.localNotification({
+          channelId: message.channel, // (required)
+          channelName: message.channel,
+          autoCancel: true,
+
+          subText: 'Local Notification Demo',
+          title: 'Document Tracking System',
+          message: message.message,
+          vibrate: true,
+          vibration: 300,
+          playSound: true,
+          soundName: 'default',
+        });
+      }
+    });
+  });
+
+  SocketConnection.socket.on('connect_error', err => {
+    console.warn(err);
+  });
 
 
   return (
