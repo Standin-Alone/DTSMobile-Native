@@ -15,6 +15,7 @@ import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { createFilter } from "react-native-search-filter";
 
 
 import Loader from '../constants/Loader';
@@ -26,12 +27,15 @@ export default class HomeScreen extends Component {
       isAppLoading:false,
       refreshing: false,
       currentPage: 1,
+      search:'',
+      KEYS_TO_FILTERS:['document_number'],
       spinner: {
         isVisible: true,
         color: Colors.color_palette.orange,
         size: 60,
       }
     };
+    
   }
 
   handleRefreshData = async () => {
@@ -40,32 +44,33 @@ export default class HomeScreen extends Component {
     NetInfo.fetch().then(async response => {
       let payload = {
         office_code: await AsyncStorage.getItem('office_code'),
+        current_page:1,
       };
       if (response.isConnected) {
         axios
           .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
           .then(response => {
+            
             if (response.data['Message'] == 'true') {
-              response.data['doc_info'].map(item => {
-                this.setState({
-                  data: [
-                    {
-                      document_number: item.document_number,
-                      info_region: item.info_region,
-                      type: item.type,
-                      subject: item.subject,
-                      status: item.active,
-                      rcl_status: item.rcl_status,
-                    },
-                  ],
-                });
-              });
+              this.setState({data:response.data['doc_info']})
+              // response.data['doc_info'].map(item => {
+              //   this.setState({
+              //     data: [
+              //       {
+              //         document_number: item.document_number,
+              //         info_region: item.info_region,
+              //         type: item.type,
+              //         subject: item.subject,
+              //         status: item.active,
+              //         rcl_status: item.rcl_status,
+              //       },
+              //     ],
+              //   });
+              // });
               this.setState({refreshing: false});
             }
           })
-          .catch(error => {
-            console.warn(error.response.data);
-            console.warn(error.response);
+          .catch(error => {            
             this.setState({refreshing: false});
           });
       }
@@ -107,8 +112,11 @@ export default class HomeScreen extends Component {
           {item.document_number}
         </Text>
         <TouchableOpacity
-          onPress={() =>
-            this.props.navigation.navigate('History', {document_info: [item]})
+          onPress={() =>{
+            
+            this.props.navigation.navigate('History', {document_info: [item]})            
+            
+          }
           }>
           <Text style={styles.viewHistory}>View</Text>
         </TouchableOpacity>
@@ -139,36 +147,51 @@ export default class HomeScreen extends Component {
     </View>
   );
 
-  loadMore = () => {
-    // let addPage = this.state.currentPage + 1;
-    // const supplier_id = await AsyncStorage.getItem("supplier_id");
-    // NetInfo.fetch().then((response: any) => {
-    //   if (response.isConnected) {
-    //     axios
-    //       .get(
-    //         ip_config.ip_address + "evoucher/api/get-scanned-vouchers/"+supplier_id+"/"+addPage
-    //       )
-    //       .then((response) => {
-    //         if (response.status == 200) {
-    //           if(response.data.length){
-    //             let new_data = response.data;
-    //             setScannedVouchers([...scannedVouchers,new_data[0]]);
-    //           }
-    //         }
-    //         setRefreshing(false);
-    //       })
-    //       .catch((error) => {
-    //         Alert.alert('Error!','Something went wrong.')
-    //         console.warn(error.response);
-    //         setRefreshing(false);
-    //       });
-    //   } else {
-    //     Alert.alert("Message", "No Internet Connection.");
-    //   }
-    // });
+  loadMore = async () => {
+
+    this.setState({isAppLoading:true})
+    let addPage = this.state.currentPage;
+    
+    
+    let payload = {
+      office_code: await AsyncStorage.getItem('office_code'),
+      current_page:addPage,
+    };
+    
+    NetInfo.fetch().then((response: any) => {
+      if (response.isConnected) {
+        axios
+        .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+          .then(async (response) => {
+            if (response.status == 200) {
+              if (response.data['Message'] == 'true') {
+                console.warn(response.data['doc_info'][0]);
+        
+                  response.data['doc_info'].map((item)=>this.setState({data:[...this.state.data,item]}))
+                   
+            
+                
+              }
+            }
+            this.setState({refreshing: false,isAppLoading:false});
+          })
+          .catch((error) => {
+            alert('Error!','Something went wrong.')
+            
+            this.setState({refreshing: false,isAppLoading:false});
+          });
+      } else {
+        this.setState({refreshing: false,isAppLoading:false});
+        alert("Message", "No Internet Connection.");
+      }
+    });
   };
 
   render() {
+    const filteredDocuments = this.state.data.filter(
+      createFilter(this.state.search, this.state.KEYS_TO_FILTERS)
+    );
+  
     return (
       <View style={styles.container}>
         <Fumi
@@ -180,6 +203,7 @@ export default class HomeScreen extends Component {
           iconWidth={40}
           inputPadding={16}
           style={styles.searchTextInput}
+          onChangeText = {(value)=>this.setState({search:value})}
           keyboardType="email-address"
         />
 
@@ -187,9 +211,11 @@ export default class HomeScreen extends Component {
           <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
             <View style={styles.documentsContainer}>
               <FlatList
+                initialNumToRender={5}
                 scrollEnabled
-                data={this.state.data}
+                data={this.state.data ? filteredDocuments : null}
                 renderItem={this.handleRenderItem}
+                extraData={this.state.data}
                 style={{top: 20, height: 100}}
                 ListEmptyComponent={() => this.emptyComponent()}
                 contentContainerStyle={styles.flatListContainer}
@@ -197,9 +223,10 @@ export default class HomeScreen extends Component {
                 refreshing={this.state.refreshing}
                 onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
                 onEndReached={async ({distanceFromEnd}) => {
-                  if (distanceFromEnd > 0) {
-                    await setCurrentPage(prevState => prevState + 1);
-                    loadMore();
+                  if (distanceFromEnd > 0) {                
+                    
+                    await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
+                    this.loadMore();
                   }
                 }}
               />
@@ -250,7 +277,7 @@ const styles = StyleSheet.create({
   card: {
     top: 20,
     width: (Layout.window.width / 100) * 120,
-    height: (Layout.window.height / 100) * 30,
+    height: (Layout.window.height / 100) * 20,
     minHeight: (Layout.window.height / 100) * 30,
     right: 40,
     // backgroundColor:Colors.color_palette.base
@@ -283,7 +310,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flexGrow: 0,
-    paddingBottom: 90,
+    paddingBottom: 40,
   },
   empty: {
     top: 5,

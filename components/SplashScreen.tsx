@@ -21,7 +21,7 @@ export default class SplashScreenContainer extends React.Component {
 componentDidMount(){
     let self  = this;
     setTimeout(()=>{
-        console.warn(this.props);
+        
      NetInfo.fetch().then(async (response)=>{
           if(response.isConnected){
             

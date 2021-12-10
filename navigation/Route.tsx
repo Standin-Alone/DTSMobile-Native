@@ -25,6 +25,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import io from "socket.io-client";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SocketConnection from '../constants/SocketConnection';
+import { Alert } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -47,9 +48,10 @@ function MyStack() {
 
 export default function Route(){
 
-
+  console.warn(SocketConnection.socket);
   
   SocketConnection.socket.on('connect', msg => {
+    
     SocketConnection.socket.on('get notification', async message => {
       let user_id = await AsyncStorage.getItem('user_id');
       let office_code = await AsyncStorage.getItem('office_code');
@@ -83,10 +85,19 @@ export default function Route(){
     });
   });
 
-  SocketConnection.socket.on('connect_error', err => {
-    console.warn(err);
+  SocketConnection.socket.on('connect_error', function(err) {
+
+    // console.warn(err);
   });
 
+  
+  // SocketConnection.socket.on("disconnect", (reason) => {
+  //   console.warn(JSON.stringify(reason.message));
+  // });
+
+  // SocketConnection.socket.on('connect_failed', function(err) {
+  //   console.warn(JSON.stringify(err.message));
+  // });
 
   return (
     <NavigationContainer>

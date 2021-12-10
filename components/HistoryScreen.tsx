@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Timeline from 'react-native-timeline-flatlist';
 import NetInfo from '@react-native-community/netinfo';
+
 import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 
@@ -31,6 +32,7 @@ export default class HistoryScreen extends Component {
   }
 
   get_history = () => {
+    this.setState({history:[]});
     let document_number = this.state.params.document_info[0].document_number;
 
     axios
@@ -57,6 +59,7 @@ export default class HistoryScreen extends Component {
   renderFooter = () => {};
 
   render_timeline = (rowData, index) => {
+    
     return (
       <View style={{flex: 1}}>
         <Text
@@ -69,21 +72,22 @@ export default class HistoryScreen extends Component {
                 padding: 10,
                 borderRadius: 20,
                 color:
-                  rowData.type == 'Released' ? Colors.primary : Colors.green,
+                  rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger ,
                 borderColor:
-                  rowData.type == 'Released' ? Colors.primary : Colors.green,
+                  rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger,
                 borderWidth: 1,
                 marginBottom: 20,
               },
             ],
           ]}>
+
           {' '}
           <Icon
             name={rowData.type == 'Released' ? 'envelope-open-o' : 'check'}
             size={10}
-            color={rowData.type == 'Released' ? Colors.primary : Colors.green}
+            color={rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger}
           />{' '}
-          {rowData.type + ' By'}
+          {rowData.rcl_status == 1 ? rowData.type + ' By'  : 'Not Authorize to Receive'}
         </Text>
         <Text style={[styles.cardHeader]}>
           {' '}

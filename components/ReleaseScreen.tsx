@@ -1,10 +1,17 @@
 import React from 'react';
-import {StyleSheet, Text, View, Pressable, ScrollView,ToastAndroid, Alert} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  ToastAndroid,
+  Alert,
+} from 'react-native';
 
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
 import SocketConnection from '../constants/SocketConnection';
-
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -20,10 +27,11 @@ import DocumentPicker from 'react-native-document-picker';
 import Spinner from 'react-native-spinkit';
 import {launchCamera} from 'react-native-image-picker';
 import * as RNFS from 'react-native-fs';
-import { List } from 'react-native-paper';
-import FileViewer from "react-native-file-viewer";
-
-
+import {List} from 'react-native-paper';
+import FileViewer from 'react-native-file-viewer';
+import ModalSelector from 'react-native-modal-selector';
+import { createFilter } from "react-native-search-filter";
+import {BackHandler} from 'react-native';
 
 export default class ReleaseScreen extends React.Component {
   constructor(props) {
@@ -32,15 +40,24 @@ export default class ReleaseScreen extends React.Component {
       isLoading: false,
       selectedRecipients: [],
       recipients: [],
-      base64_files: [] ,
+      base64_files: [],
       params: this.props.route.params,
       files_to_upload: [],
       isAppLoading: false,
+      openActionPicker: false,
       spinner: {
         isVisible: true,
         color: Colors.color_palette.orange,
         size: 60,
       },
+      actions: [
+        {key: 0, section: true, label: 'Select Action'},
+        {key: 1, label: 'Approved'},
+        {key: 2, label: 'Disapproved'},
+        {key: 3, label: 'Endorsed'},
+        {key: 4, label: 'Return To Sender'},
+        {key: 5, label: 'No Action'},
+      ],
       releaseFormOptions: {
         headerTitle: 'Release Document',
         headerTransparent: true,
@@ -83,7 +100,12 @@ export default class ReleaseScreen extends React.Component {
 
       multiSelectStyle: {
         scrollView: {height: 20},
-        chipContainer: {left: 15, width: (Layout.window.width / 100) * 85},
+        chipContainer: {
+          left: 15,
+          width: (Layout.window.width / 100) * 85,
+          height: 100,
+          padding: 20,
+        },
         chipsWrapper: {top: 30, height: 1000},
         button: {backgroundColor: Colors.new_color_palette.yellow},
         selectToggle: {
@@ -96,105 +118,134 @@ export default class ReleaseScreen extends React.Component {
     };
   }
 
+  removeDocument = (documents, index) => {
+    try {
+      let array = documents.slice();
+      let get_index = array.indexOf(index);
 
-  removeDocument = (documents,index) =>{
+      let remove = array.splice(get_index, 1);
 
-
-    try{
-        let array = documents.slice();
-        let get_index = array.indexOf(index);
-        
-        
-        let remove = array.splice(get_index,1)
-        
-      
-          this.setState({
-                  
-            base64_files: array.map(item => ({uri: item.uri,name:item.name}))
-          }).catch((err)=>{ console.warn(err)});
-        }catch(err){
-
-        };
-  }
+      this.setState({
+        base64_files: array.map(item => ({uri: item.uri, name: item.name})),
+      }).catch(err => {
+        console.warn(err);
+      });
+    } catch (err) {}
+  };
   // attach document or file
   pickDocument = async () => {
-
     this.setState({isAppLoading: true});
+    try {
+      const results = await DocumentPicker.pickMultiple({
+        allowMultiSelection: true,
+        type: [DocumentPicker.types.pdf],
+      });
 
-    const results = await DocumentPicker.pickMultiple({
-      allowMultiSelection: true,
-      type: [        
-        DocumentPicker.types.pdf,        
-      ],
-    });
-   
-    // check if document viewer was launched
-    if(results){
-      // get results of file
-      results.map( async (item_file)=>{
+      // check if document viewer was launched
+      if (results) {
+        // get results of file
+        results.map(async item_file => {
+          // check if file is less than 10 mb
+          if (item_file.size <= 10000000) {
+            const convert_to_base64 = await RNFS.readFile(
+              item_file.uri,
+              'base64',
+            );
+            // check file if duplicate
+            const check_file = this.state.base64_files.find(
+              data => data.name === item_file.name,
+            );
+            if (!check_file) {
 
-        // check if file is less than 10 mb
-        if(item_file.size <= 10000000){
-          const convert_to_base64 = await RNFS.readFile(item_file.uri,'base64');    
-          // check file if duplicate
-          const check_file = this.state.base64_files.find((data)=>data.name === item_file.name);
-          if(!check_file){
-            this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: convert_to_base64,name:item_file.name,path:item_file.uri,type:item_file.type}]}));
+              const baseName = item_file.name.split('.').slice(0, -1).join('.');
+
+              var file_extension = item_file.name.split('.').pop(); 
+              this.setState(prevState => ({
+                base64_files: [
+                  ...prevState.base64_files,
+                  {
+                    uri: convert_to_base64,
+                    name: item_file.name,
+                    base_name:baseName,
+                    file_extension:file_extension,
+                    path: item_file.uri,
+                    type: item_file.type,
+                  },
+                ],
+              }));
+            }
+          } else {
+            ToastAndroid.showWithGravity(
+              'Your file should not exceed 10MB.',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
           }
-          
-
-        }else{
-          ToastAndroid.showWithGravity('Your file should not exceed 10MB.',ToastAndroid.SHORT,ToastAndroid.BOTTOM);
-        }
+        });
+        this.setState({isAppLoading: false});
+      } else {
         
-      })
-      this.setState({isAppLoading: false});
-    }else{
-      this.setState({isAppLoading: false});
+        this.setState({isAppLoading: false});
+      }
+      1;
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {        
+        this.setState({isAppLoading: false});
+      }
     }
-
-
   };
-
 
   // take photo
   takePhoto = async () => {
-
+    // open loading screen
     this.setState({isAppLoading: true});
-    
+
     const results = await launchCamera({
       mediaType: 'photo',
       includeBase64: true,
     });
 
-    
     // check if camera was launched
-    if(results){
+    if (!results.didCancel) {
       this.setState({isAppLoading: false});
       // get results of file
-      results.assets.map( async (item_file)=>{
-
+      results.assets.map(async item_file => {
         // check if file is less than 10 mb
-        if(item_file.fileSize <= 10000000){
+        if (item_file.fileSize <= 10000000) {
           
-          
-          this.setState(prevState =>({base64_files: [...prevState.base64_files,{uri: item_file.base64,name:item_file.fileName,path:item_file.uri,type:item_file.type}]}));
-  
-        }else{
-          ToastAndroid.showWithGravity('Your file should not exceed 10MB.',ToastAndroid.SHORT,ToastAndroid.BOTTOM);
+          const baseName = item_file.fileName.split('.').slice(0, -1).join('.');
+          var file_extension = item_file.fileName.split('.').pop(); 
+
+          this.setState(prevState => ({
+            base64_files: [
+              ...prevState.base64_files,
+              {
+                uri: item_file.base64,
+                name: item_file.fileName,
+                base_name: baseName,
+                file_extension:file_extension,
+                path: item_file.uri,
+                type: item_file.type,
+              },
+            ],
+          }));
+        } else {
+          ToastAndroid.showWithGravity(
+            'Your file should not exceed 10MB.',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+          );
         }
-        
-      })
-    }else{
+      });
+    } else {
       this.setState({isAppLoading: false});
     }
-
-  
-
   };
 
   // execute when first load of screen
   componentDidMount() {
+    
+
     this.props.navigation.setOptions(this.state.releaseFormOptions);
     axios
       .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_offices')
@@ -204,8 +255,7 @@ export default class ReleaseScreen extends React.Component {
   }
 
   // handle release button
-  handleRelease = async () => {
-    
+  handleRelease = async (action) => {
     // check if it has selected recipients
     if (this.state.selectedRecipients.length != 0) {
       // show confirmation before receive the document
@@ -218,85 +268,130 @@ export default class ReleaseScreen extends React.Component {
         okButtonStyle: styles.confirmButton,
         okButtonTextStyle: styles.confirmButtonText,
         callback: () => {
-          this.setState({isAppLoading: true});
           Popup.hide();
+          this.setState({isAppLoading: true});
+          console.warn(this.state.base64_files)
           NetInfo.fetch().then(async response => {
-        
-
             // Initialize Form Data
             let fd = new FormData();
-            console.warn(this.state.base64_files);
-            fd.append('document_number',JSON.stringify(this.state.params.document_info[0].document_number));
-            fd.append('office_code',JSON.stringify(await AsyncStorage.getItem('office_code')));
-            fd.append('user_id', JSON.stringify(await AsyncStorage.getItem('user_id')));
-            fd.append('full_name',JSON.stringify(await AsyncStorage.getItem('full_name')));
-            fd.append('info_division', JSON.stringify(await AsyncStorage.getItem('division')));
-            fd.append('info_service', JSON.stringify(await AsyncStorage.getItem('service')));
-            fd.append('recipients_office_code',JSON.stringify( this.state.selectedRecipients));                        
-            fd.append('file_attachments' ,JSON.stringify(this.state.base64_files))
+            let division = await AsyncStorage.getItem('division');
             
-            
+            fd.append(
+              'document_number',
+              JSON.stringify(
+                this.state.params.document_info[0].document_number
+              ),
+            );
+            fd.append(
+              'office_code',
+              JSON.stringify(await AsyncStorage.getItem('office_code')),
+            );
+            fd.append(
+              'user_id',
+              JSON.stringify(await AsyncStorage.getItem('user_id')),
+            );
+            fd.append(
+              'full_name',
+              JSON.stringify(await AsyncStorage.getItem('full_name')),
+            );
+            fd.append(
+              'info_division',
+              JSON.stringify(await AsyncStorage.getItem('division')),
+            );
+            fd.append(
+              'info_service',
+              JSON.stringify(await AsyncStorage.getItem('service')),
+            );
 
-  
-           
+            fd.append('doc_prefix', JSON.stringify(this.state.params.document_info[0].type));
+            fd.append('action', JSON.stringify(action));
+            
+            fd.append(
+              'recipients_office_code',
+              JSON.stringify(this.state.selectedRecipients),
+            );
+            fd.append(
+              'file_attachments',
+              JSON.stringify(this.state.base64_files),
+            );
+
             if (response.isConnected) {
               // perform axios here
               axios
                 .post(
                   ipConfig.ipAddress + 'MobileApp/Mobile/release_document',
-                  fd
-                  ,{
+                  fd,
+                  {
                     headers: {
-                      'Content-Type': 'multipart/form-data'
-                    }  
-                  }      
+                      'Content-Type': 'multipart/form-data',
+                    },
+                  },
                 )
-                .then(response => {                  
+                .then(response => {
                   this.setState({isAppLoading: false});
-                  if (response.data['Message'] == 'true') {
-                    
-                    // SocketConnection.socket.emit('push notification', {
-                    //   channel: response.data['doc_info'][0].sender_office_code,
-                    //   message:
-                    //     data.info_division + ' sucessfully received the document',
-                    // });
-  
-                    Popup.show({
-                      type: 'success',
-                      title: 'Success!',
-                      textBody: 'Successfully released the document',
-                      buttonText: 'Go back to My Documents.',
-                      okButtonStyle: styles.confirmButton,
-                      okButtonTextStyle: styles.confirmButtonText,
-                      modalContainerStyle: styles.confirmModal,
-                      callback: () => {
-                        this.setState({isAppLoading: false});
-                        Popup.hide();
-                        this.props.navigation.replace('Root');
-                      },
-                    });
-                  } else {
-                    console.warn(response.data);
-                    Popup.show({
-                      type: 'danger',
-                      title: 'Error!',
-                      textBody:
-                        'Sorry you are not valid to release this document.',
-                      buttonText: 'I understand',
-                      okButtonStyle: styles.confirmButton,
-                      okButtonTextStyle: styles.confirmButtonText,
-                      modalContainerStyle: styles.confirmModal,
-                      callback: () => {
-                        this.setState({isAppLoading: false});
-                        Popup.hide();
-                      },
-                    });
-                  }
+                  // check if status code is 200
+                  if(response.status == 200){
+                    if (response.data['Message'] == 'true') {
+                      console.warn(response.data)
+                      // this.state.selectedRecipients.map(item =>
+                      //   SocketConnection.socket.emit('push notification', {
+                      //     channel:
+                      //       response.data['doc_info'][0].sender_office_code,
+                      //     message: division + ' sucessfully release the document',
+                      //   }),
+                      // );
+
+                      Popup.show({
+                        type: 'success',
+                        title: 'Success!',
+                        textBody: 'Successfully released the document',
+                        buttonText: 'Go back to My Documents.',
+                        okButtonStyle: styles.confirmButton,
+                        okButtonTextStyle: styles.confirmButtonText,
+                        modalContainerStyle: styles.confirmModal,
+                        callback: () => {
+                          this.setState({isAppLoading: false});
+                          Popup.hide();
+                          this.props.navigation.replace('Root');
+                          
+                        },
+                      });
+                    } else {
+                      console.warn(response.data);
+                      Popup.show({
+                        type: 'danger',
+                        title: 'Error!',
+                        textBody:
+                          'Sorry you are not valid to release this document.',
+                        buttonText: 'I understand',
+                        okButtonStyle: styles.confirmButton,
+                        okButtonTextStyle: styles.confirmButtonText,
+                        modalContainerStyle: styles.confirmModal,
+                        callback: () => {
+                          this.setState({isAppLoading: false});
+                          Popup.hide();
+                        },
+                      });
+                    }
+                }else{
+                  Popup.show({
+                    type: 'danger',
+                    title: 'Error!',
+                    textBody: 'Something went wrong. Please try again. ',
+                    confirmText: 'Okay',
+                    okButtonStyle: styles.confirmButton,
+                    okButtonTextStyle: styles.confirmButtonText,
+                    modalContainerStyle: styles.confirmModal,
+                    callback: () => {
+                      this.setState({isAppLoading: false});
+                      Popup.hide();
+                    },
+                  });                  
+                }
                 })
-                .catch((error) => {
-                  
+                .catch(error => {
                   this.setState({isAppLoading: false});
-                  console.log(error.response.data);
+                  // console.log(error.response.data);
                   Popup.hide();
                 });
             } else {
@@ -336,52 +431,49 @@ export default class ReleaseScreen extends React.Component {
     }
   };
 
-  handleSelectedChange = value => {
-    console.warn(value);
+  handleSelectedChange = value => {    
     this.setState({selectedRecipients: value});
   };
 
-  viewFile = (file)=>{
-    
-    FileViewer.open(file).then(()=>{
-
-    }).catch((err)=>console.warn(err));
-  }
+  viewFile = file => {
+    FileViewer.open(file)
+      .then(() => {})
+      .catch(err => console.warn(err));
+  };
 
   render() {
     // design start here
     return (
       <View style={styles.container}>
-        
-            <View style={styles.innerContainer}>
-              <View>
-                <Text style={styles.docuInfo}>
-                  {' '}
-                  <Icon
-                    name="file"
-                    size={20}
-                    color={Colors.color_palette.orange}
-                  />{' '}
-                  Document Information
-                </Text>
-              </View>
-              {/* {this.state.params.document_info &&
-                this.state.params.document_info.map(item => ( */}
+        <View style={styles.innerContainer}>
+          <View>
+            <Text style={styles.docuInfo}>
+              {' '}
+              <Icon
+                name="file"
+                size={20}
+                color={Colors.color_palette.orange}
+              />{' '}
+              Document Information
+            </Text>
+          </View>
+          {this.state.params.document_info &&
+            this.state.params.document_info.map(item => (
               <ScrollView style={styles.infoCard}>
                 <View>
                   <Text style={styles.detailTitle}>Document Number:</Text>
                 </View>
                 <View style={styles.titleView}>
                   {/* <Text style={styles.detailValue}>DA-CO-IAS-MO20211025-00001</Text> */}
-                  {/* <Text style={styles.detailValue}>{item.document_number}</Text> */}
+                  <Text style={styles.detailValue}>{item.document_number}</Text>
                 </View>
 
-                <View>
+                <View style={{backgroundColor:''}}>
                   <Text style={styles.detailTitle}>Title:</Text>
                 </View>
                 <View style={styles.titleView}>
                   {/* <Text style={styles.titleValue}>RFFA-IMC-On-Boarding-File-Structure </Text> */}
-                  {/* <Text style={styles.titleValue}>{item.subject} </Text> */}
+                  <Text style={styles.titleValue}>{item.subject} </Text>
                 </View>
 
                 <View>
@@ -389,7 +481,11 @@ export default class ReleaseScreen extends React.Component {
                 </View>
                 <View style={styles.titleView}>
                   {/* <Text style={styles.titleValue}>ICTS SysAdd</Text> */}
-                  {/* <Text style={styles.titleValue}>{item.INFO_DIVISION}{'\n'}{item.INFO_SERVICE}</Text> */}
+                  <Text style={styles.titleValue}>
+                    {item.sender_division}
+                    {'\n'}
+                    {item.sender_service}
+                  </Text>
                 </View>
 
                 <View>
@@ -403,35 +499,51 @@ export default class ReleaseScreen extends React.Component {
                   {/* <Text style={styles.detailTitle}>
                     Uploaded Files (Optional):
                   </Text> */}
-                    { this.state.base64_files.length != 0  ?
-                      <List.Accordion
-                      
+                  {this.state.base64_files.length != 0 ? (
+                    <List.Accordion
                       expanded={true}
-                      style={[styles.detailTitle,{backgroundColor:Colors.new_color_palette.main_background,overflow:'scroll'}]}                    
-                      titleStyle={{color:Colors.primary}}
-                      title=" Uploaded Files (Optional):"
-                      >
+                      style={[
+                        styles.detailTitle,
                         {
-                          this.state.base64_files.map((item_base64) => (
-                            <List.Item  
-                            
-                                titleStyle={styles.file_item} 
-                                title={item_base64.name}                                 
-                                left={()=><Icon name="eye" color={Colors.warning}  size={30} onPress={()=>this.viewFile(item_base64.path)} />} 
-                                right={()=><Icon name="close" color={Colors.danger} size={30} onPress={()=>this.removeDocument(this.state.base64_files,item_base64)}    />} 
-                                
-                            />                      
-                          ))
-                        }
-                      
+                          backgroundColor:
+                            Colors.new_color_palette.main_background,
+                          overflow: 'scroll',
+                        },
+                      ]}
+                      titleStyle={{color: Colors.primary}}
+                      title=" Uploaded Files (Optional):">
+                      {this.state.base64_files.map(item_base64 => (
+                        <List.Item
+                          titleStyle={styles.file_item}
+                          title={item_base64.name}
+                          left={() => (
+                            <Icon
+                              name="eye"
+                              color={Colors.warning}
+                              size={30}
+                              onPress={() => this.viewFile(item_base64.path)}
+                            />
+                          )}
+                          right={() => (
+                            <Icon
+                              name="close"
+                              color={Colors.danger}
+                              size={30}
+                              onPress={() =>
+                                this.removeDocument(
+                                  this.state.base64_files,
+                                  item_base64,
+                                )
+                              }
+                            />
+                          )}
+                        />
+                      ))}
                     </List.Accordion>
-                    : null
-                    }                 
+                  ) : null}
                 </View>
 
-                <View style={styles.titleView}>
-            
-                </View>
+                <View style={styles.titleView}></View>
 
                 <View>
                   <Text style={styles.detailTitle}>Choose Recipients</Text>
@@ -448,6 +560,13 @@ export default class ReleaseScreen extends React.Component {
                     onSelectedItemsChange={value =>
                       this.setState({selectedRecipients: value})
                     }
+                    filterItems = {(searchTerm)=>{
+                      const filteredRecipients = this.state.recipients.filter(
+                        createFilter(searchTerm, ['division','name'])
+                      );
+
+                      return filteredRecipients
+                    }}
                     selectedItems={this.state.selectedRecipients}
                     highlightChildren={true}
                     styles={this.state.multiSelectStyle}
@@ -456,9 +575,9 @@ export default class ReleaseScreen extends React.Component {
 
                 {/*release button */}
               </ScrollView>
-              {/* ))} */}
-            </View>        
-        
+            ))}
+        </View>
+
         {/* Footer Start here */}
         <View style={{flex: 1}}></View>
         <View
@@ -492,6 +611,22 @@ export default class ReleaseScreen extends React.Component {
           </View>
 
           <View style={{marginRight: 20}}>
+            {/* show action picker */}
+            <ModalSelector
+              data={this.state.actions}
+              onChange={option => this.handleRelease(option.label)}
+              visible={this.state.openActionPicker}
+              initValue="Release"          
+              selectedItemTextStyle={styles.selectedText}
+              initValueTextStyle={styles.saveText}
+              selectStyle={[styles.saveButton,{display:'none'}]}
+              selectTextStyle={styles.saveText}
+              optionTextStyle={{color: Colors.dark}}
+              sectionTextStyle={{color: Colors.new_color_palette.orange}}
+              onModalClose = {()=>{this.setState({openActionPicker:false})
+            }}
+            />
+
             <Button
               textStyle={styles.saveText}
               style={styles.saveButton}
@@ -499,7 +634,16 @@ export default class ReleaseScreen extends React.Component {
               activeOpacity={100}
               isLoading={this.state.isLoading}
               disabledStyle={{opacity: 1}}
-              onPress={this.handleRelease}>
+              onPress={() => 
+              {
+                if(this.state.selectedRecipients.length != 0){
+                  this.setState({openActionPicker: this.state.openActionPicker == false ? true : false})
+                }else{
+                  alert('Please select recipients first.')
+                }
+                
+              }    
+            }>
               Release Document
             </Button>
           </View>
@@ -549,6 +693,7 @@ const styles = StyleSheet.create({
     width: (Layout.window.width / 100) * 80,
   },
   saveButton: {
+    height: 50,
     borderColor: Colors.new_color_palette.orange,
     width: (Layout.window.width / 100) * 65,
     bottom: 10,
@@ -556,7 +701,13 @@ const styles = StyleSheet.create({
   },
   saveText: {
     fontWeight: 'bold',
+    fontSize: 20,
     color: Colors.light,
+  },
+  selectedText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: Colors.new_color_palette.yellow,
   },
   titleValue: {
     fontSize: 18,
@@ -571,7 +722,6 @@ const styles = StyleSheet.create({
   infoCard: {
     top: 20,
     backgroundColor: Colors.new_color_palette.main_background,
-
     width: (Layout.window.width / 100) * 95,
     height: (Layout.window.height / 100) * 66,
     borderRadius: 15,
@@ -614,7 +764,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  file_item:{
-    color:Colors.new_color_palette.orange
-  }
+  file_item: {
+    color: Colors.new_color_palette.orange,
+  },
 });

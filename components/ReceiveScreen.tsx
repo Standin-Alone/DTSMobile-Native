@@ -50,8 +50,8 @@ export default class ReceiveScreen extends Component {
         headerRight: () => (
           <Pressable
             onPress={async () => {
-              this.props.navigation.navigate('HistoryScreen', {
-                document_info: params.document_info,
+              this.props.navigation.navigate('History', {
+                document_info: this.state.params.document_info,
               });
             }}
             style={({pressed}) => ({
@@ -70,6 +70,8 @@ export default class ReceiveScreen extends Component {
   }
 
   componentDidMount() {
+
+    console.warn( this.state.params)
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -226,7 +228,7 @@ export default class ReceiveScreen extends Component {
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>None</Text>
+                  <Text style={styles.titleValue}>{item.remarks}</Text>
                 </View>
               </View>
             ))}
