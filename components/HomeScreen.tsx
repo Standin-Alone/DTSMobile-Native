@@ -52,21 +52,7 @@ export default class HomeScreen extends Component {
           .then(response => {
             
             if (response.data['Message'] == 'true') {
-              this.setState({data:response.data['doc_info']})
-              // response.data['doc_info'].map(item => {
-              //   this.setState({
-              //     data: [
-              //       {
-              //         document_number: item.document_number,
-              //         info_region: item.info_region,
-              //         type: item.type,
-              //         subject: item.subject,
-              //         status: item.active,
-              //         rcl_status: item.rcl_status,
-              //       },
-              //     ],
-              //   });
-              // });
+              this.setState({data:response.data['doc_info']})            
               this.setState({refreshing: false});
             }
           })
