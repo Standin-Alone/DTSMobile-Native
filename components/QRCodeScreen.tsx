@@ -33,7 +33,7 @@ export default class QRCodeScreen extends Component{
     }
 
     navigateToReleaseScreen = (data)=>{
-      this.props.navigation.replace('Release',{document_info:data})
+      this.props.navigation.replace('DocInfo',{document_info:data})
     }
 
     handleBarCodeRead = async (scanResult)=>{

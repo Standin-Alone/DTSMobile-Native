@@ -17,6 +17,12 @@ import ReceiveScreen from '../components/ReceiveScreen';
 import ReleaseScreen from '../components/ReleaseScreen';
 import HistoryScreen from '../components/HistoryScreen';
 
+//  New Release Screen
+import DocInfoScreen from '../components/transactions/DocInfoScreen';
+import AttachmentScreen from '../components/transactions/AttachmentScreen';
+import ReviewReleaseScreen from '../components/transactions/ReviewReleaseScreen';
+import RecipientsScreen from '../components/transactions/RecipientsScreen';
+
 
 
 import BottomTabNavigator from './BottomTabNavigator';
@@ -32,13 +38,22 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Root>
-      <Stack.Navigator initialRouteName="Authentication" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               
+      <Stack.Navigator initialRouteName="Root" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />                  
         <Stack.Screen name="OTP" component={OTPScreen} options={{headerShown:false}} />                          
         <Stack.Screen name="Authentication" component={SplashScreen} options={{headerShown:false}} />                  
         <Stack.Screen name="Root" component={BottomTabNavigator} options={{headerShown:false}}  />       
         <Stack.Screen name="Receive" component={ReceiveScreen}  />                             
         <Stack.Screen name="Release" component={ReleaseScreen}  />
+
+
+        {/* transactions */}
+        <Stack.Screen name="DocInfo" component={DocInfoScreen}  />
+        <Stack.Screen name="Attachment" component={AttachmentScreen}  />
+        <Stack.Screen name="ReviewRelease" component={ReviewReleaseScreen}  />
+        <Stack.Screen name="Recipients" component={RecipientsScreen}  />
+
+        
         <Stack.Screen name="History" component={HistoryScreen}  />
       </Stack.Navigator>
     </Root>

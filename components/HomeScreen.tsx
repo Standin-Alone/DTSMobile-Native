@@ -134,7 +134,7 @@ export default class HomeScreen extends Component {
   );
 
   loadMore = async () => {
-
+    console.warn('helo')
     this.setState({isAppLoading:true})
     let addPage = this.state.currentPage;
     
@@ -197,7 +197,10 @@ export default class HomeScreen extends Component {
           <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
             <View style={styles.documentsContainer}>
               <FlatList
-                initialNumToRender={5}
+                 
+                maxToRenderPerBatch={8}
+                windowSize={11}
+                initialNumToRender={8}            
                 scrollEnabled
                 data={this.state.data ? filteredDocuments : null}
                 renderItem={this.handleRenderItem}
@@ -207,14 +210,14 @@ export default class HomeScreen extends Component {
                 contentContainerStyle={styles.flatListContainer}
                 onRefresh={this.handleRefreshData}
                 refreshing={this.state.refreshing}
-                onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
-                onEndReached={async ({distanceFromEnd}) => {
-                  if (distanceFromEnd > 0) {                
+                //onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
+                // onEndReached={async ({distanceFromEnd}) => {
+                //   if (distanceFromEnd > 0) {                
                     
-                    await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
-                    this.loadMore();
-                  }
-                }}
+                //     await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
+                //     this.loadMore();
+                //   }
+                // }}
               />
             </View>
           </View>         

@@ -46,6 +46,7 @@
     "react-native-sectioned-multi-select": "^0.8.1",
     "react-native-spinkit": "^1.5.1",
     "react-native-status-bar-height": "^2.6.0",
+    "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "^12.1.1",
     "react-native-textinput-effects": "^0.6.2",
     "react-native-timeline-flatlist": "^0.7.6",
