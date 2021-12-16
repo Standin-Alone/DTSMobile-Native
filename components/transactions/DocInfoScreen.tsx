@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable} from 'react-native';
+import {StyleSheet, Text, View, Pressable,ScrollView} from 'react-native';
 import Layout from '../../constants/Layout';
 import Colors from '../../constants/Colors';
 import StepIndicatorStyle from '../../constants/StepIndicatorStyle';
@@ -77,7 +77,7 @@ export default class DocInfoScreen extends Component {
   }
 
   componentDidMount() {
-    
+    console.warn(this.state.params.document_info);
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -122,7 +122,7 @@ export default class DocInfoScreen extends Component {
           </View>
           {this.state.params.document_info &&
             this.state.params.document_info.map(item => (
-              <View style={styles.infoCard}>
+              <ScrollView style={styles.infoCard}>
                 <View>
                   <Text style={styles.detailTitle}>Document Number:</Text>
                 </View>
@@ -166,9 +166,13 @@ export default class DocInfoScreen extends Component {
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  {/* <Text style={styles.titleValue}>{item.remarks}</Text> */}
+                  <Text style={styles.titleValue}>{item.remarks}                  
+                  </Text>
+
+
+                  
                 </View>
-              </View>
+              </ScrollView>
             ))}
         </View>
 

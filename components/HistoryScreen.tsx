@@ -107,8 +107,10 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.INFO_SERVICE} {'\n'} {rowData.INFO_DIVISION} {'\n'}
         </Text>
+        {rowData.type == 'Released'  ?
         <Text style={styles.cardHeader}>
           {' '}
+          
           <Icon
             name="wechat"
             size={10}
@@ -116,6 +118,8 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.remarks == null ? 'None' : rowData.remarks} {'\n'}
         </Text>
+        : null
+        }
       </View>
     );
   };

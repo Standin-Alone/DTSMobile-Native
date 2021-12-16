@@ -17,6 +17,7 @@ import io from 'socket.io-client';
 import StepIndicator from 'react-native-step-indicator';
 import ModalSelector from 'react-native-modal-selector';
 import {List} from 'react-native-paper';
+import FileViewer from 'react-native-file-viewer';
 
 
   
@@ -88,7 +89,7 @@ export default class ReviewReleaseScreen extends Component {
 
   componentDidMount() {
 
-    
+    console.warn(this.state.params.base64_files)
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -302,6 +303,34 @@ export default class ReviewReleaseScreen extends Component {
     <Icon {...StepIndicatorStyle.getStepIndicatorIconConfig(params)} />
   );
 
+
+  // Remove document from file upload
+  removeDocument = (documents, index) => {
+    try {
+      let array = documents.slice();
+      let get_index = array.indexOf(index);
+
+      let remove = array.splice(get_index, 1);
+      var get_params = {...this.state.params};
+      get_params.base64_files  = array.map(item => ({uri: item.uri, name: item.name}));
+
+      console.warn( get_params.base64_files);
+      this.setState({
+        params:get_params
+      }).catch(err => {
+        console.warn(err);
+      });
+    } catch (err) {}
+  };
+
+
+  viewFile = file => {
+    FileViewer.open(file)
+      .then(() => {})
+      .catch(err => console.warn(err));
+  }
+
+  
   render() {
     return (
       <View style={styles.container}>
@@ -392,27 +421,27 @@ export default class ReviewReleaseScreen extends Component {
                             <List.Item
                             titleStyle={styles.file_item}
                             title={item_base64.name}
-                            left={() => (
-                                <Icon
-                                name="eye"
-                                color={Colors.warning}
-                                size={30}
-                                onPress={() => this.viewFile(item_base64.path)}
-                                />
-                            )}
-                            right={() => (
-                                <Icon
-                                name="times-circle"
-                                color={Colors.danger}
-                                size={30}
-                                onPress={() =>
-                                    this.removeDocument(
-                                    this.state.base64_files,
-                                    item_base64,
-                                    )
-                                }
-                                />
-                            )}
+                            // left={() => (
+                            //     <Icon
+                            //     name="eye"
+                            //     color={Colors.warning}
+                            //     size={30}
+                            //     onPress={() => this.viewFile(item_base64.path)}
+                            //     />
+                            // )}
+                            // right={() => (
+                            //     <Icon
+                            //     name="times-circle"
+                            //     color={Colors.danger}
+                            //     size={30}
+                            //     onPress={() =>
+                            //         this.removeDocument(
+                            //         this.state.params.base64_files,
+                            //         item_base64,
+                            //         )
+                            //     }
+                            //     />
+                            // )}
                             />
                         ))}
                         </List.Accordion>
