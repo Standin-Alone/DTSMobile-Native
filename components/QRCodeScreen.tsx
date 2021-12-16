@@ -54,7 +54,7 @@ export default class QRCodeScreen extends Component{
             this.setState({isBarcodeRead:false});
             if(response.data['Message'] == 'true'){
 
-     
+              
               
               Popup.show({
                 type: 'success',              
@@ -77,7 +77,7 @@ export default class QRCodeScreen extends Component{
               })
   
             }else if(response.data['Message'] == 'Not Authorize'){
-              
+         
               Popup.show({
                 type: 'danger',              
                 title: 'Error!',
@@ -91,7 +91,38 @@ export default class QRCodeScreen extends Component{
                 },              
               })
               
+            }else if(response.data['Message'] == 'Document were still not release.'){
+                        
+              Popup.show({
+                type: 'danger',              
+                title: 'Error!',
+                textBody: "Document were still not release.",                
+                buttonText:'Ok',
+                okButtonStyle:styles.confirmButton,
+                okButtonTextStyle: styles.confirmButtonText,
+                callback: () => {    
+                  this.setState({isBarcodeRead:true});              
+                  Popup.hide()                                    
+                },              
+              })
+              this.setState({isBarcodeRead:true});   
+            }else if(response.data['Message'] == 'You already receive the document.'){
+              
+              Popup.show({
+                type: 'danger',              
+                title: 'Error!',
+                textBody: response.data['Message'],                
+                buttonText:'Ok',
+                okButtonStyle:styles.confirmButton,
+                okButtonTextStyle: styles.confirmButtonText,
+                callback: () => {    
+                  this.setState({isBarcodeRead:true});              
+                  Popup.hide()                                    
+                },              
+              })
+              this.setState({isBarcodeRead:true});   
             }else{
+                    
               Popup.show({
                 type: 'danger',              
                 title: 'Error!',
@@ -104,7 +135,7 @@ export default class QRCodeScreen extends Component{
                   Popup.hide()                                    
                 },              
               })
-              
+              this.setState({isBarcodeRead:true});   
             } 
           }).catch((err)=>{
             console.warn(err.response.data);

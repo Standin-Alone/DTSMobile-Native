@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable} from 'react-native';
+import {StyleSheet, Text, View, Pressable,ScrollView} from 'react-native';
 import Layout from '../../constants/Layout';
 import Colors from '../../constants/Colors';
 import StepIndicatorStyle from '../../constants/StepIndicatorStyle';
@@ -24,7 +24,7 @@ import {List} from 'react-native-paper';
 export default class ReviewReleaseScreen extends Component {
   constructor(props) {
     super(props);
-    console.warn(this.props.route.params);
+    console.warn(this.props.route.params.selectedRecipients);
     this.state = {
       scanned: false,  
       files_to_upload: [],
@@ -88,7 +88,7 @@ export default class ReviewReleaseScreen extends Component {
 
   componentDidMount() {
 
-
+    
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -96,14 +96,15 @@ export default class ReviewReleaseScreen extends Component {
   handleSelectAction = ()=>  {
 
     
-      this.setState({openActionPicker: this.state.openActionPicker == false ? true : false})    
+    this.setState({openActionPicker: this.state.openActionPicker == false ? true : false})    
     
   }   
   //handle Release Document
   handleRelease = async (action) => {
-    console.warn(this.state.params)
+    let consolidate_recipients = action ==  'Return To Sender' ? this.state.params.selectedRecipients.concat(this.state.params.document_info[0].sender_office_code) : this.state.params.selectedRecipients ;
+
     // check if it has selected recipients
-    if (this.state.params.selectedRecipients.length != 0) {
+    if (consolidate_recipients.length != 0) {
       // show confirmation before receive the document
       Popup.show({
         type: 'confirm',
@@ -149,12 +150,12 @@ export default class ReviewReleaseScreen extends Component {
               JSON.stringify(await AsyncStorage.getItem('service')),
             );
 
-            fd.append('doc_prefix', JSON.stringify(this.state.params.document_info[0].type));
+            fd.append('doc_prefix', JSON.stringify(this.state.params.document_info[0].document_type));
             fd.append('action', JSON.stringify(action));
             
             fd.append(
               'recipients_office_code',
-              JSON.stringify(this.state.params.selectedRecipients),
+              JSON.stringify( consolidate_recipients),
             );
             fd.append(
               'file_attachments',
@@ -174,19 +175,21 @@ export default class ReviewReleaseScreen extends Component {
                   },
                 )
                 .then(response => {
+                  console.warn(response.data);
                   this.setState({isAppLoading: false});
                   // check if status code is 200
                   if(response.status == 200){
                     if (response.data['Message'] == 'true') {
-                      console.warn(response.data)
-                      // this.state.selectedRecipients.map(item =>
-                      //   SocketConnection.socket.emit('push notification', {
-                      //     channel:
-                      //       response.data['doc_info'][0].sender_office_code,
-                      //     message: division + ' sucessfully release the document',
-                      //   }),
-                      // );
+                      console.warn( this.state.params.selectedRecipients)
+                      this.state.params.selectedRecipients.map(item =>
+                        SocketConnection.socket.emit('push notification', {
+                          channel:item,
+                            // response.data['doc_info'][0].sender_office_code,
+                          message: division + ' sucessfully release the document',
+                        }),
+                      );
 
+                   
                       Popup.show({
                         type: 'success',
                         title: 'Success!',
@@ -196,9 +199,12 @@ export default class ReviewReleaseScreen extends Component {
                         okButtonTextStyle: styles.confirmButtonText,
                         modalContainerStyle: styles.confirmModal,
                         callback: () => {
-                          this.setState({isAppLoading: false});
                           Popup.hide();
-                          this.props.navigation.replace('Root');
+                          this.setState({isAppLoading: false});                        
+                          this.props.navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Root' }]
+                          });
                           
                         },
                       });
@@ -214,6 +220,13 @@ export default class ReviewReleaseScreen extends Component {
                         okButtonTextStyle: styles.confirmButtonText,
                         modalContainerStyle: styles.confirmModal,
                         callback: () => {
+
+                          this.props.navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Root' }]
+                          });
+
+
                           this.setState({isAppLoading: false});
                           Popup.hide();
                         },
@@ -229,6 +242,13 @@ export default class ReviewReleaseScreen extends Component {
                     okButtonTextStyle: styles.confirmButtonText,
                     modalContainerStyle: styles.confirmModal,
                     callback: () => {
+                      
+                      this.props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Root' }]
+                      });
+
+
                       this.setState({isAppLoading: false});
                       Popup.hide();
                     },
@@ -308,34 +328,34 @@ export default class ReviewReleaseScreen extends Component {
               Document Information
             </Text>
           </View>
-          {/* {this.state.params.document_info &&
-            this.state.params.document_info.map(item => ( */}
-              <View style={styles.infoCard}>
+          {this.state.params.document_info &&
+            this.state.params.document_info.map(item => (
+              <ScrollView style={styles.infoCard}>
                 <View>
                   <Text style={styles.detailTitle}>Document Number:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.detailValue}>DA-CO-IAS-MO20211025-00001</Text>
-                  {/* <Text style={styles.detailValue}>{item.document_number}</Text> */}
+                  {/* <Text style={styles.detailValue}>DA-CO-IAS-MO20211025-00001</Text> */}
+                  <Text style={styles.detailValue}>{item.document_number}</Text>
                 </View>
 
                 <View>
                   <Text style={styles.detailTitle}>Title:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>RFFA-IMC-On-Boarding-File-Structure </Text>
-                  {/* <Text style={styles.titleValue}>{item.subject} </Text> */}
+                  {/* <Text style={styles.titleValue}>RFFA-IMC-On-Boarding-File-Structure </Text> */}
+                  <Text style={styles.titleValue}>{item.subject} </Text>
                 </View>
 
                 <View>
                   <Text style={styles.detailTitle}>From:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>ICTS SysAdd</Text>
-                  <Text style={styles.titleValue}>
-                    {/* {item.sender_division}
-                    {'\n'}
-                    {item.sender_service} */}
+                  {/* <Text style={styles.titleValue}>ICTS SysAdd</Text> */}
+                  <Text style={styles.titleValue} numberOfLines={10}>
+                    {item.sender_division}
+                    {' '}
+                    {item.sender_service}
                   </Text>
                 </View>
 
@@ -343,12 +363,18 @@ export default class ReviewReleaseScreen extends Component {
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  {/* <Text style={styles.titleValue}>{item.remarks}</Text> */}                  
+                  <Text style={styles.titleValue}>{item.remarks}
+                                    
+                  </Text>                  
                 </View>
 
+            
 
-                <List.Accordion
-                        expanded={false}
+              </ScrollView>
+             ))} 
+
+              <ScrollView style={[styles.moreInfoCard]}>
+                  <List.Accordion                    
                         style={[
                             styles.detailTitle,
                             {
@@ -361,7 +387,7 @@ export default class ReviewReleaseScreen extends Component {
                         ]}
                         
                         titleStyle={{color: Colors.primary}}
-                        title=" Uploaded Files (Optional):">
+                        title={'Files to Upload ('+this.state.params.base64_files.length+')'}>
                         {this.state.params.base64_files.map(item_base64 => (
                             <List.Item
                             titleStyle={styles.file_item}
@@ -389,42 +415,16 @@ export default class ReviewReleaseScreen extends Component {
                             )}
                             />
                         ))}
-                      </List.Accordion>
+                        </List.Accordion>
 
 
-
-                      <List.Accordion
-                        expanded={true}
-                        style={[
-                            styles.detailTitle,
-                            {
-                            top:20,
-                            borderRadius:20,
-                           
-                            backgroundColor:Colors.new_color_palette.main_background,
-                            overflow: 'scroll',
-                            },
-                        ]}
                         
-                        titleStyle={{color: Colors.primary}}
-                        title=" Recipients:">
-                        {this.state.params.selectedRecipients.map(item_base64 => (
-                            <List.Item
-                            titleStyle={styles.file_item}
-                            title={item_base64.name}
-                            left={() => (
-                                <Icon
-                                name="eye"
-                                color={Colors.warning}
-                                size={30}
-                                onPress={() => this.viewFile(item_base64.path)}
-                                />
-                            )}                            
-                            />
-                        ))}
-                      </List.Accordion>
-              </View>
-            {/* ))} */}
+              </ScrollView>
+
+
+
+
+              
         </View>
 
         <View style={{flex: 1}}>
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     color: Colors.new_color_palette.orange,
   },
   detailValue: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: 'bold',
     color: Colors.new_color_palette.orange,
     left: 20,
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
     color: Colors.light,
   },
   titleValue: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'Bold',
     color: Colors.new_color_palette.orange,
     left: 20,
@@ -517,12 +517,21 @@ const styles = StyleSheet.create({
     width: (Layout.window.width / 100) * 30,
   },
   infoCard: {
+    overflow:'hidden',
     top: 20,
     backgroundColor: Colors.new_color_palette.main_background,
     width: (Layout.window.width / 100) * 95,
-    height: (Layout.window.height / 100) * 65,
+    height: (Layout.window.height / 100) * 45,
     borderRadius: 15,
-    minHeight: (Layout.window.height / 100) * 65,
+    minHeight: (Layout.window.height / 100) * 45,
+  },
+  moreInfoCard: {
+    top:30,
+    backgroundColor: Colors.new_color_palette.main_background,
+    width: (Layout.window.width / 100) * 95,
+    height: (Layout.window.height / 100) * 19,
+    borderRadius: 15,
+    minHeight: (Layout.window.height / 100) * 19,
   },
   innerContainer: {
     top: 60,
@@ -554,5 +563,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     color: Colors.new_color_palette.yellow,
+  },
+  file_item: {
+    color: Colors.new_color_palette.orange
   },
 });

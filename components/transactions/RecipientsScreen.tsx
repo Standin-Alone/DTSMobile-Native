@@ -35,6 +35,7 @@ export default class RecipientsScreen extends Component {
       hasPermission: false,
       params: this.props.route.params,
       isAppLoading: false,
+      defaultRecipients: [],
       spinner: {
         isVisible: true,
         color: Colors.color_palette.orange,
@@ -78,7 +79,10 @@ export default class RecipientsScreen extends Component {
         ),
       },
       multiSelectStyle: {
-        
+        searchTextInput:{
+          color:'#050A0D'
+          
+        },
         chipContainer: {
           left: 15,
           width: (Layout.window.width / 100) * 85,
@@ -104,44 +108,53 @@ export default class RecipientsScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.navigation.addListener ('focus', async() =>{
+      let document_number =this.state.params.document_info[0].document_number;
+      let my_office_code =this.state.params.document_info[0].recipient_office_code;
+      axios
+      .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_offices/'+document_number+'/'+my_office_code)
+      .then(response => {
+       
+        
+        
+        this.setState({recipients: response.data['offices']});
+        this.setState({defaultRecipients: response.data['default_recipients']});
+  
+  
+        
+  
+      });
 
-    
-    this.props.navigation.setOptions(this.state.receiveFormOptions);
 
-    axios
-    .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_offices')
-    .then(response => {
-      this.setState({recipients: response.data['offices']});
+      this.setState({isAppLoading:false})
+       
     });
+
+
+    this.props.navigation.setOptions(this.state.receiveFormOptions);
+   
   }
+
 
 
   // handle  go to review release screen
   handleGoToReviewReleaseScreen = async () => {
-    console.warn(this.state.selectedRecipients.length)
-    if(this.state.selectedRecipients.length != 0 ){
+
+    
+    let selectedRecipients=this.state.selectedRecipients;
+    let defaultRecipients=this.state.defaultRecipients;
+  
+    
+    console.warn();
+    this.setState({isAppLoading:true})
         this.props.navigation.push('ReviewRelease',{
           document_info:this.state.params.document_info,
           base64_files:this.state.params.base64_files,
-          selectedRecipients:this.state.selectedRecipients,
+          selectedRecipients:defaultRecipients.concat(selectedRecipients),
+         
 
         });
-    }else{
-      Popup.show({
-        type: 'danger',
-        title: 'Error!',
-        textBody:
-          'Please select recipients.',
-        buttonText: 'I understand',
-        okButtonStyle: styles.confirmButton,
-        okButtonTextStyle: styles.confirmButtonText,
-        modalContainerStyle: styles.confirmModal,
-        callback: () => {
-          this.setState({isAppLoading: false});
-          Popup.hide();
-        },
-      });
-    }
+
   };
 
  
@@ -175,15 +188,20 @@ export default class RecipientsScreen extends Component {
                 selectText="Select recipients..."
                 showDropDowns={true}
                 readOnlyHeadings={true}
-                onSelectedItemsChange={value =>
+                onSelectedItemsChange={value =>{
+                  console.warn(value)
                   this.setState({selectedRecipients: value})
                 }
-                filterItems = {(searchTerm)=>{
-                  const filteredRecipients = this.state.recipients.filter(
-                    createFilter(searchTerm, ['division','name'])
+                }
+                filterItems = {(searchTerm)=>{      
+                  console.warn( this.state.recipients)           
+                  const filteredRecipients = this.state.recipients.filter((item,index)=>
+                   item.name.toLowerCase().includes(searchTerm.toLowerCase())            
                   );
 
-                  return filteredRecipients
+   
+
+                  return filteredRecipients;
                 }}
                 selectedItems={this.state.selectedRecipients}
                 highlightChildren={true}

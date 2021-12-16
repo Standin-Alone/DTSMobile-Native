@@ -11,7 +11,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 import axios from 'axios';
 import * as ipConfig from '../ipconfig';
-
+import {Card} from 'react-native-paper';
 export default class HistoryScreen extends Component {
   constructor(props) {
     super(props);
@@ -83,7 +83,7 @@ export default class HistoryScreen extends Component {
 
           {' '}
           <Icon
-            name={rowData.type == 'Released' ? 'envelope-open-o' : 'check'}
+            name={rowData.type == 'Released' ? 'envelope-open-o' :  rowData.rcl_status == 1 ? 'check-circle-o' : 'exclamation-triangle'}
             size={10}
             color={rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger}
           />{' '}
@@ -124,6 +124,19 @@ export default class HistoryScreen extends Component {
     // design start here
     return (
       <View style={styles.container}>
+
+      <Card style={{width:(Layout.window.width / 100) * 95,marginTop:(Layout.window.height / 100) * 5,backgroundColor:Colors.light}} elevation={2}>
+            <Card.Title           
+                title= {'Document Number:'}
+                titleStyle = {styles.title}
+                subtitle={this.state.params.document_info[0].document_number}
+                subtitleStyle={styles.subtitle}
+                subtitleNumberOfLines={10}     
+                           
+                
+            />
+                            
+          </Card>
         <View style={styles.innerContainer}>
           <Timeline
             data={this.state.history}
@@ -163,9 +176,9 @@ const styles = StyleSheet.create({
   },
 
   innerContainer: {
-    top: 80,
+    top: 5,
     width: (Layout.window.width / 100) * 95,
-    height: (Layout.window.height / 100) * 86,
+    height: (Layout.window.height / 100) * 80,
     // backgroundColor:'yellow'
   },
   timeline: {
@@ -202,4 +215,14 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 13,
   },
+  title: {    
+    color: '#050A0D',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  subtitle: {    
+    color: Colors.new_color_palette.orange,
+    fontSize: 16,
+    fontWeight: 'bold',
+  }
 });

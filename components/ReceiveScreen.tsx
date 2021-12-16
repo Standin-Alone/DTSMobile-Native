@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable} from 'react-native';
+import {StyleSheet, Text, View, Pressable,ScrollView} from 'react-native';
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
 import SocketConnection from '../constants/SocketConnection';
@@ -12,7 +12,7 @@ import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spinner from 'react-native-spinkit';
-import io from 'socket.io-client';
+
 
 export default class ReceiveScreen extends Component {
   constructor(props) {
@@ -115,7 +115,8 @@ export default class ReceiveScreen extends Component {
              
 
                 if (response.data['Message'] == 'true') {
-                    console.warn(response.data['doc_info'][0].sender_office_code);
+                    
+                  // push notification
                   SocketConnection.socket.emit('push notification', {
                     channel: response.data['doc_info'][0].sender_office_code,
                     message:
@@ -195,7 +196,7 @@ export default class ReceiveScreen extends Component {
           </View>
           {this.state.params.document_info &&
             this.state.params.document_info.map(item => (
-              <View style={styles.infoCard}>
+              <ScrollView style={styles.infoCard}>
                 <View>
                   <Text style={styles.detailTitle}>Document Number:</Text>
                 </View>
@@ -213,6 +214,18 @@ export default class ReceiveScreen extends Component {
                 </View>
 
                 <View>
+                  <Text style={styles.detailTitle}>Originating Office:</Text>
+                </View>
+
+                <View style={styles.titleView}>
+                  <Text style={styles.titleValue} numberOfLines={10}>
+                    {item.origin_division}
+
+                    {item.origin_service}
+                  </Text>
+                </View>
+                
+                <View>
                   <Text style={styles.detailTitle}>From:</Text>
                 </View>
                 <View style={styles.titleView}>
@@ -228,9 +241,11 @@ export default class ReceiveScreen extends Component {
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>{item.remarks}</Text>
+                  <Text style={styles.titleValue} >{item.remarks} 
+                  
+                  </Text>
                 </View>
-              </View>
+              </ScrollView>
             ))}
         </View>
 
@@ -271,9 +286,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.new_color_palette.blue_background,
   },
   detailTitle: {
-    fontSize: 18,
-    fontWeight: '200',
-    color: Colors.new_color_palette.text,
+    fontSize: 14,    
+    color: Colors.new_color_palette.title,
     padding: 20,
     top: 5,
   },
@@ -299,7 +313,7 @@ const styles = StyleSheet.create({
   },
   titleValue: {
     fontSize: 18,
-    fontWeight: '200',
+
     color: Colors.new_color_palette.orange,
     left: 20,
     width: (Layout.window.width / 100) * 80,
@@ -313,7 +327,8 @@ const styles = StyleSheet.create({
     width: (Layout.window.width / 100) * 95,
     height: (Layout.window.height / 100) * 76,
     borderRadius: 15,
-    minHeight: (Layout.window.height / 100) * 72,
+    minHeight: (Layout.window.height / 100) * 72
+    
   },
   innerContainer: {
     top: 50,

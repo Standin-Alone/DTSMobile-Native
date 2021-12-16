@@ -52,8 +52,8 @@ export default class ProfileScreen extends Component{
       
               <View style={styles.profileCard}>
                     <Image source={Images.user_icon} style={styles.user_icon}/>
-                    <Text style={styles.user_name}>{this.state.name}</Text>
-                    <Text style={styles.role}>{this.state.office}</Text>
+                    <Text style={styles.user_name} numberOfLines={50}>{this.state.name}</Text>
+                    <Text style={styles.role} numberOfLines={50}>{this.state.office}</Text>
               </View>
       
               <View>

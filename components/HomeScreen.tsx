@@ -16,7 +16,7 @@ import * as ipConfig from '../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { createFilter } from "react-native-search-filter";
-
+import {Card} from 'react-native-paper';
 
 import Loader from '../constants/Loader';
 export default class HomeScreen extends Component {
@@ -50,7 +50,7 @@ export default class HomeScreen extends Component {
         axios
           .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
           .then(response => {
-            
+            console.warn(response)
             if (response.data['Message'] == 'true') {
               this.setState({data:response.data['doc_info']})            
               this.setState({refreshing: false});
@@ -70,61 +70,73 @@ export default class HomeScreen extends Component {
     this.handleRefreshData();
   }
 
-  // old render item
-  // handleRenderItem = ({item}) =>(
-  //     <View style={styles.card}>
-  //         <Text style={styles.documentNumber}>{item.document_number}</Text>
-  //         <Text style={styles.documentTypeLabel}>Document Type</Text>
-  //         <Text style={styles.itemValue}>{item.type}</Text>
-  //         <Text style={styles.documentTypeLabel}>Subject</Text>
-  //         <Text style={styles.itemValue}>{item.subject}</Text>
-  //         <Text style={styles.documentTypeLabel}>Status</Text>
-  //         <Text style={styles.itemValue}>{item.status}</Text>
-  //         <Text>{'\n'}</Text>
-  //         <View style={{borderBottomWidth:2,borderBottomColor:Colors.new_color_palette.divider}}></View>
-  //     </View>
-  // )
+
 
   handleRenderItem = ({item}) => (
-    <View style={styles.card}>
-      <View style={{flexDirection: 'row', width: '100%'}}>
-        <FontAwesome
-          name="file"
-          size={50}
-          color={Colors.color_palette.orange}
-          style={{marginLeft: 60, top: 10, right: 0, left: 0}}
-        />
-        <Text style={styles.documentNumber} adjustsFontSizeToFit>
-          {item.document_number}
-        </Text>
-        <TouchableOpacity
-          onPress={() =>{
-            
-            this.props.navigation.navigate('History', {document_info: [item]})            
-            
-          }
-          }>
-          <Text style={styles.viewHistory}>View</Text>
-        </TouchableOpacity>
-      </View>
-      <Text
-        style={{
-          left: 115,
-          fontSize: 10,
-          bottom: 20,
-          color: Colors.new_color_palette.text,
-        }}
-        adjustsFontSizeToFit>
-        {item.subject}
-      </Text>
-      <Text>{'\n'}</Text>
-      <View
-        style={{
-          borderBottomWidth: 2,
-          borderBottomColor: Colors.new_color_palette.divider,
-        }}></View>
-    </View>
+    
+    <Card style={{width:(Layout.window.width / 100) * 95,left:10,marginTop:20,backgroundColor:Colors.new_color_palette.main_background}} elevation={0}>
+      <Card.Title 
+       
+
+          title= {item.document_number}
+         
+
+      
+          titleStyle = {styles.documentNumber}
+          subtitle=  {'Subject: '+item.subject}
+          subtitleNumberOfLines={10}
+          left  = {()=><FontAwesomeIcon  name="file" size={30}  color={Colors.new_color_palette.blue}/>} 
+          right = {()=><FontAwesomeIcon  name="eye" size={30}  color={Colors.new_color_palette.orange} onPress = {()=>this.props.navigation.navigate('History', {document_info: [item]})}/>}                        
+      />
+          
+      
+    </Card>
   );
+
+  // old  render item
+  // handleRenderItem = ({item}) => (
+  //   <View style={styles.card}>
+  //     <View style={{flexDirection: 'row', width: '100%'}}>
+  //       <FontAwesome
+  //         name="file"
+  //         size={50}
+  //         color={Colors.color_palette.orange}
+  //         style={{marginLeft: 60, top: 10, right: 0, left: 0}}
+  //       />
+  //       <Text style={styles.documentNumber} adjustsFontSizeToFit>
+  //         {item.document_number}
+  //       </Text>
+  //       <TouchableOpacity
+
+  //         style={styles.viewButton}
+  //         onPress={() =>{
+            
+  //           this.props.navigation.navigate('History', {document_info: [item]})            
+            
+  //         }
+  //         }>
+  //         <Text style={styles.viewHistory}>View</Text>
+          
+  //       </TouchableOpacity>
+  //     </View>
+  //     <Text
+  //       style={{
+  //         left: 115,
+  //         fontSize: 10,
+  //         bottom: 20,
+  //         color: Colors.new_color_palette.text,
+  //       }}
+  //       adjustsFontSizeToFit>
+  //       {item.subject}
+  //     </Text>
+  //     <Text>{'\n'}</Text>
+  //     <View
+  //       style={{
+  //         borderBottomWidth: 2,
+  //         borderBottomColor: Colors.new_color_palette.divider,
+  //       }}></View>
+  //   </View>
+  // );
 
   //this component will show if flatlist is empty
   emptyComponent = () => (
@@ -205,7 +217,8 @@ export default class HomeScreen extends Component {
                 data={this.state.data ? filteredDocuments : null}
                 renderItem={this.handleRenderItem}
                 extraData={this.state.data}
-                style={{top: 20, height: 100}}
+                style={{top: 30, height: 100}}
+                
                 ListEmptyComponent={() => this.emptyComponent()}
                 contentContainerStyle={styles.flatListContainer}
                 onRefresh={this.handleRefreshData}
@@ -271,19 +284,17 @@ const styles = StyleSheet.create({
     right: 40,
     // backgroundColor:Colors.color_palette.base
   },
-  documentNumber: {
-    top: 5,
-    color: Colors.new_color_palette.text,
-    fontSize: 15,
+  documentNumber: {    
+    color: Colors.new_color_palette.title,
+    fontSize: 12,
     fontWeight: 'bold',
-    left: 10,
   },
   viewHistory: {
-    top: 20,
+    top: 15,
     color: Colors.new_color_palette.yellow,
     fontSize: 15,
-    left:30,
-    alignSelf: 'flex-end',
+  
+    alignSelf: 'center',
   },
   documentTypeLabel: {
     top: 5,
@@ -299,7 +310,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flexGrow: 0,
-    paddingBottom: 40,
+    paddingBottom: (Layout.window.height /100 ) * 15 ,
   },
   empty: {
     top: 5,
@@ -310,4 +321,12 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: 'bold',
   },
+  viewButton:{
+    left:30,
+    borderWidth:1,
+    borderColor:Colors.new_color_palette.orange,
+    width:(Layout.window.width / 100) * 20,
+    borderRadius:20,
+  
+  }
 });

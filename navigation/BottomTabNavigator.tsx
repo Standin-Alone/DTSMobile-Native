@@ -101,7 +101,7 @@ export default function BottomTabNavigator() {
      name="Home" component={HomeScreen}/>
 
 
-  <Tabs.Screen  options={{
+  <Tabs.Screen  options={({navigation})=>({
       tabBarIcon: ()=> <Icon name="qrcode" size={40}  color={'white'}/>,
       headerTitle:'Scan Route Slip QR Code',
       headerTransparent:true,
@@ -139,7 +139,7 @@ export default function BottomTabNavigator() {
           />
         </Pressable>
       )
-    }}  
+    })}  
     
      name="qrcode" component={QRCodeScreen} />
 

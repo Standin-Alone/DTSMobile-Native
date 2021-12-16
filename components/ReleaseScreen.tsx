@@ -331,6 +331,7 @@ export default class ReleaseScreen extends React.Component {
                   this.setState({isAppLoading: false});
                   // check if status code is 200
                   if(response.status == 200){
+                    console.warn(response.data);
                     if (response.data['Message'] == 'true') {
                       console.warn(response.data)
                       // this.state.selectedRecipients.map(item =>

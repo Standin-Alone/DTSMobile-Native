@@ -38,7 +38,7 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Root>
-      <Stack.Navigator initialRouteName="Root" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               
+      <Stack.Navigator initialRouteName="Authentication" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />                  
         <Stack.Screen name="OTP" component={OTPScreen} options={{headerShown:false}} />                          
         <Stack.Screen name="Authentication" component={SplashScreen} options={{headerShown:false}} />                  
@@ -63,10 +63,10 @@ function MyStack() {
 
 export default function Route(){
 
-  console.warn(SocketConnection.socket);
+
   
   SocketConnection.socket.on('connect', msg => {
-    
+      console.warn('connected');
     SocketConnection.socket.on('get notification', async message => {
       let user_id = await AsyncStorage.getItem('user_id');
       let office_code = await AsyncStorage.getItem('office_code');
@@ -77,8 +77,7 @@ export default function Route(){
         PushNotification.createChannel({
           channelId: message.channel,
           channelName: message.channel,
-          soundName: 'default',
-          importance: 4,
+          soundName: 'default',     
           vibrate: true,
         });
 
@@ -88,7 +87,7 @@ export default function Route(){
           channelName: message.channel,
           autoCancel: true,
 
-          subText: 'Local Notification Demo',
+          subText: 'Notification',
           title: 'Document Tracking System',
           message: message.message,
           vibrate: true,

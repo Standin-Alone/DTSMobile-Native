@@ -84,7 +84,11 @@ export default class AttachmentScreen extends Component {
 
   componentDidMount() {
 
-    console.warn( this.state.params)
+    this.props.navigation.addListener ('focus', async() =>{
+      this.setState({isAppLoading:false})
+       
+    });
+    
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -92,7 +96,7 @@ export default class AttachmentScreen extends Component {
   // handle receive button
   handleGoToRecipients = async () => {
 
-
+    this.setState({isAppLoading:true});
     this.props.navigation.push('Recipients',{
       document_info: this.state.params.document_info,
       base64_files:this.state.base64_files
@@ -297,7 +301,7 @@ export default class AttachmentScreen extends Component {
                         ]}
                         
                         titleStyle={{color: Colors.primary}}
-                        title=" Uploaded Files (Optional):">
+                        title="List of Selected Files to Upload:">
                         {this.state.base64_files.map(item_base64 => (
                             <List.Item
                             titleStyle={styles.file_item}
