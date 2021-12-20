@@ -1,43 +1,34 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  FlatList,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
-import Layout from '../constants/Layout';
-import Colors from '../constants/Colors';
+import {StyleSheet, FlatList, Text, View, TouchableOpacity} from 'react-native';
+import Layout from '../../constants/Layout';
+import Colors from '../../constants/Colors';
 import {Fumi} from 'react-native-textinput-effects';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
-import * as ipConfig from '../ipconfig';
+import * as ipConfig from '../../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { createFilter } from "react-native-search-filter";
+import {createFilter} from 'react-native-search-filter';
 import {Card} from 'react-native-paper';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Loader from '../constants/Loader';
-import TopTabNavigator from '../navigation/TopTabNavigator';
 import * as Animatable from 'react-native-animatable';
-export default class HomeScreen extends Component {
+import Loader from '../../constants/Loader';
+export default class IncomingScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-      isAppLoading:false,
+      isAppLoading: false,
       refreshing: false,
       currentPage: 1,
-      search:'',
-      KEYS_TO_FILTERS:['document_number'],
+      search: '',
+      KEYS_TO_FILTERS: ['document_number'],
       spinner: {
         isVisible: true,
         color: Colors.color_palette.orange,
         size: 60,
-      }
+      },
     };
-    
   }
 
   handleRefreshData = async () => {
@@ -46,19 +37,19 @@ export default class HomeScreen extends Component {
     NetInfo.fetch().then(async response => {
       let payload = {
         office_code: await AsyncStorage.getItem('office_code'),
-        current_page:1,
+        current_page: 1,
       };
       if (response.isConnected) {
         axios
           .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
           .then(response => {
-            console.warn(response)
+            console.warn(response);
             if (response.data['Message'] == 'true') {
-              this.setState({data:response.data['doc_info']})            
+              this.setState({data: response.data['doc_info']});
               this.setState({refreshing: false});
             }
           })
-          .catch(error => {            
+          .catch(error => {
             this.setState({refreshing: false});
           });
       }
@@ -66,33 +57,50 @@ export default class HomeScreen extends Component {
   };
 
   componentDidMount() {
- 
-
     this.setState({refreshing: true});
     this.handleRefreshData();
   }
 
-
-
   handleRenderItem = ({item}) => (
-    
-    <Card style={{width:(Layout.window.width / 100) * 95,left:10,marginTop:20,backgroundColor:Colors.new_color_palette.main_background}} elevation={0}>
-      <Card.Title 
-       
-
-          title= {item.document_number}
-         
-
-      
-          titleStyle = {styles.documentNumber}
-          subtitle=  {'Subject: '+item.subject}
+    <Animatable.View  animation="slideInDown" duration={5000}>
+      <Card
+        style={{
+          width: (Layout.window.width / 100) * 95,
+          left: 10,
+          marginTop: 20,
+          backgroundColor: Colors.new_color_palette.main_background,
+          borderRadius: 20,
+          borderWidth: 1,
+        }}
+        elevation={0}>
+        <Card.Title
+          title={item.document_number}
+          titleStyle={styles.documentNumber}
+          subtitle={'Subject: ' + item.subject}
           subtitleNumberOfLines={10}
-          left  = {()=><FontAwesomeIcon  name="file" size={30}  color={Colors.new_color_palette.blue}/>} 
-          right = {()=><FontAwesomeIcon  name="eye" size={30}  color={Colors.new_color_palette.orange} onPress = {()=>this.props.navigation.navigate('History', {document_info: [item]})}/>}                        
-      />
-          
-      
-    </Card>
+          left={() => (
+            <FontAwesomeIcon
+              name="file"
+              size={30}
+              color={Colors.new_color_palette.blue}
+            />
+          )}
+          right={() => (
+            <FontAwesomeIcon
+              name="eye"
+              size={30}
+              color={Colors.new_color_palette.orange}
+              onPress={() =>
+                this.props.navigation.navigate('History', {
+                  document_info: [item],
+                })
+              }
+            />
+          )}
+          rightStyle={{right: 10}}
+        />
+      </Card>
+    </Animatable.View>
   );
 
   // old  render item
@@ -112,13 +120,13 @@ export default class HomeScreen extends Component {
 
   //         style={styles.viewButton}
   //         onPress={() =>{
-            
-  //           this.props.navigation.navigate('History', {document_info: [item]})            
-            
+
+  //           this.props.navigation.navigate('History', {document_info: [item]})
+
   //         }
   //         }>
   //         <Text style={styles.viewHistory}>View</Text>
-          
+
   //       </TouchableOpacity>
   //     </View>
   //     <Text
@@ -148,84 +156,85 @@ export default class HomeScreen extends Component {
   );
 
   loadMore = async () => {
-    console.warn('helo')
-    this.setState({isAppLoading:true})
+    console.warn('helo');
+    this.setState({isAppLoading: true});
     let addPage = this.state.currentPage;
-    
-    
+
     let payload = {
       office_code: await AsyncStorage.getItem('office_code'),
-      current_page:addPage,
+      current_page: addPage,
     };
-    
+
     NetInfo.fetch().then((response: any) => {
       if (response.isConnected) {
         axios
-        .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
-          .then(async (response) => {
+          .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+          .then(async response => {
             if (response.status == 200) {
               if (response.data['Message'] == 'true') {
                 console.warn(response.data['doc_info'][0]);
-        
-                  response.data['doc_info'].map((item)=>this.setState({data:[...this.state.data,item]}))
-                   
-            
-                
+
+                response.data['doc_info'].map(item =>
+                  this.setState({data: [...this.state.data, item]}),
+                );
               }
             }
-            this.setState({refreshing: false,isAppLoading:false});
+            this.setState({refreshing: false, isAppLoading: false});
           })
-          .catch((error) => {
-            alert('Error!','Something went wrong.')
-            
-            this.setState({refreshing: false,isAppLoading:false});
+          .catch(error => {
+            alert('Error!', 'Something went wrong.');
+
+            this.setState({refreshing: false, isAppLoading: false});
           });
       } else {
-        this.setState({refreshing: false,isAppLoading:false});
-        alert("Message", "No Internet Connection.");
+        this.setState({refreshing: false, isAppLoading: false});
+        alert('Message', 'No Internet Connection.');
       }
     });
   };
 
   render() {
     const filteredDocuments = this.state.data.filter(
-      createFilter(this.state.search, this.state.KEYS_TO_FILTERS)
+      createFilter(this.state.search, this.state.KEYS_TO_FILTERS),
     );
-  
+
     return (
-      <View style={styles.container}>
-        <Animatable.View animation='slideInLeft' easing="ease-in-out" delay={500}>
-            <Fumi
-              label={'Search by tracking number'}
-              iconClass={FontAwesomeIcon}
-              iconName={'search'}
-              iconColor={Colors.new_color_palette.orange}
-              iconSize={20}
-              iconWidth={40}
-              inputPadding={16}
-              style={[styles.searchTextInput,{borderColor:this.state.isFocus == true ? Colors.new_color_palette.blue : Colors.new_color_palette.divider}]}
-              onBlur={()=>this.setState({isFocus:false})}
-              onFocus={()=>this.setState({isFocus:true})}
-              onChangeText = {(value)=>this.setState({search:value})}
-              keyboardType="email-address"
-            />
+      <Animatable.View
+        style={styles.container}
+        delay={1000}
+        animation="fadeInDownBig"
+        duration={2000}>
+        <FlatList
+          nestedScrollEnabled
+          maxToRenderPerBatch={8}
+          windowSize={11}
+          initialNumToRender={8}
+          scrollEnabled
+          data={this.state.data ? filteredDocuments : null}
+          renderItem={this.handleRenderItem}
+          extraData={this.state.data}
+          style={{top: 30, height: 100}}
+          ListEmptyComponent={() => this.emptyComponent()}
+          contentContainerStyle={styles.flatListContainer}
+          onRefresh={this.handleRefreshData}
+          refreshing={this.state.refreshing}
+          //onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
+          // onEndReached={async ({distanceFromEnd}) => {
+          //   if (distanceFromEnd > 0) {
 
-        </Animatable.View>
-                 
-        <View style={{flex:1,top:(Layout.window.height /100) * 20}}>
-       
-          <TopTabNavigator/>
-        </View>
-
-      
-      </View>
+          //     await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
+          //     this.loadMore();
+          //   }
+          // }}
+        />
+      </Animatable.View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,    
+    flex: 1,
     backgroundColor: Colors.light,
   },
   title: {
@@ -246,14 +255,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 65,
     backgroundColor: Colors.new_color_palette.main_background,
   },
-  searchTextInput: {    
+  searchTextInput: {
+    top: 100,
     borderRadius: 40,
     width: (Layout.window.width / 100) * 90,
-    borderWidth:1,
-    borderColor:'#ddd',
-    top:100,
-    left:20,
-    
+    position: 'absolute',
   },
   card: {
     top: 20,
@@ -263,7 +269,7 @@ const styles = StyleSheet.create({
     right: 40,
     // backgroundColor:Colors.color_palette.base
   },
-  documentNumber: {    
+  documentNumber: {
     color: Colors.new_color_palette.title,
     fontSize: 12,
     fontWeight: 'bold',
@@ -272,7 +278,7 @@ const styles = StyleSheet.create({
     top: 15,
     color: Colors.new_color_palette.yellow,
     fontSize: 15,
-  
+
     alignSelf: 'center',
   },
   documentTypeLabel: {
@@ -289,7 +295,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flexGrow: 0,
-    paddingBottom: (Layout.window.height /100 ) * 15 ,
+    paddingBottom: (Layout.window.height / 100) * 15,
   },
   empty: {
     top: 5,
@@ -300,12 +306,12 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: 'bold',
   },
-  viewButton:{
-    left:30,
-    borderWidth:1,
-    borderColor:Colors.new_color_palette.orange,
-    width:(Layout.window.width / 100) * 20,
-    borderRadius:20,
-  
-  }
+  viewButton: {
+    left: 30,
+    borderWidth: 1,
+    borderColor: Colors.new_color_palette.orange,
+    width: (Layout.window.width / 100) * 20,
+    borderRadius: 20,
+  },
+  view: {},
 });

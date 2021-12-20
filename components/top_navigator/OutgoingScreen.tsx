@@ -6,22 +6,20 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import Layout from '../constants/Layout';
-import Colors from '../constants/Colors';
+import Layout from '../../constants/Layout';
+import Colors from '../../constants/Colors';
 import {Fumi} from 'react-native-textinput-effects';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
-import * as ipConfig from '../ipconfig';
+import * as ipConfig from '../../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { createFilter } from "react-native-search-filter";
 import {Card} from 'react-native-paper';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Loader from '../constants/Loader';
-import TopTabNavigator from '../navigation/TopTabNavigator';
 import * as Animatable from 'react-native-animatable';
-export default class HomeScreen extends Component {
+import Loader from '../../constants/Loader';
+export default class OutgoingScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -76,19 +74,15 @@ export default class HomeScreen extends Component {
 
   handleRenderItem = ({item}) => (
     
-    <Card style={{width:(Layout.window.width / 100) * 95,left:10,marginTop:20,backgroundColor:Colors.new_color_palette.main_background}} elevation={0}>
-      <Card.Title 
-       
-
-          title= {item.document_number}
-         
-
-      
+    <Card style={{width:(Layout.window.width / 100) * 95,left:10,marginTop:20,backgroundColor:Colors.new_color_palette.main_background,borderRadius:20,borderWidth:1}} elevation={0}>
+      <Card.Title        
+          title= {item.document_number}      
           titleStyle = {styles.documentNumber}
           subtitle=  {'Subject: '+item.subject}
           subtitleNumberOfLines={10}
           left  = {()=><FontAwesomeIcon  name="file" size={30}  color={Colors.new_color_palette.blue}/>} 
           right = {()=><FontAwesomeIcon  name="eye" size={30}  color={Colors.new_color_palette.orange} onPress = {()=>this.props.navigation.navigate('History', {document_info: [item]})}/>}                        
+          rightStyle={{right:10}}
       />
           
       
@@ -187,38 +181,48 @@ export default class HomeScreen extends Component {
     });
   };
 
+
+
+
+
+
   render() {
     const filteredDocuments = this.state.data.filter(
       createFilter(this.state.search, this.state.KEYS_TO_FILTERS)
     );
-  
-    return (
-      <View style={styles.container}>
-        <Animatable.View animation='slideInLeft' easing="ease-in-out" delay={500}>
-            <Fumi
-              label={'Search by tracking number'}
-              iconClass={FontAwesomeIcon}
-              iconName={'search'}
-              iconColor={Colors.new_color_palette.orange}
-              iconSize={20}
-              iconWidth={40}
-              inputPadding={16}
-              style={[styles.searchTextInput,{borderColor:this.state.isFocus == true ? Colors.new_color_palette.blue : Colors.new_color_palette.divider}]}
-              onBlur={()=>this.setState({isFocus:false})}
-              onFocus={()=>this.setState({isFocus:true})}
-              onChangeText = {(value)=>this.setState({search:value})}
-              keyboardType="email-address"
-            />
-
-        </Animatable.View>
-                 
-        <View style={{flex:1,top:(Layout.window.height /100) * 20}}>
-       
-          <TopTabNavigator/>
-        </View>
-
       
-      </View>
+  
+
+
+    return (
+      <Animatable.View style={styles.container}  animation='fadeInDownBig' duration={2000}>
+        
+              <FlatList
+                nestedScrollEnabled
+                maxToRenderPerBatch={8}
+                windowSize={11}
+                initialNumToRender={8}            
+                scrollEnabled
+                data={this.state.data ? filteredDocuments : null}
+                renderItem={this.handleRenderItem}
+                extraData={this.state.data}
+                style={{top: 30, height: 100}}
+                
+                ListEmptyComponent={() => this.emptyComponent()}
+                contentContainerStyle={styles.flatListContainer}
+                onRefresh={this.handleRefreshData}
+                refreshing={this.state.refreshing}
+                //onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
+                // onEndReached={async ({distanceFromEnd}) => {
+                //   if (distanceFromEnd > 0) {                
+                    
+                //     await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
+                //     this.loadMore();
+                //   }
+                // }}
+              />    
+         
+      </Animatable.View>
     );
   }
 }
@@ -246,14 +250,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 65,
     backgroundColor: Colors.new_color_palette.main_background,
   },
-  searchTextInput: {    
+  searchTextInput: {
+    top: 100,
     borderRadius: 40,
     width: (Layout.window.width / 100) * 90,
-    borderWidth:1,
-    borderColor:'#ddd',
-    top:100,
-    left:20,
-    
+    position: 'absolute',
   },
   card: {
     top: 20,
@@ -307,5 +308,8 @@ const styles = StyleSheet.create({
     width:(Layout.window.width / 100) * 20,
     borderRadius:20,
   
+  },
+  view:{
+
   }
 });

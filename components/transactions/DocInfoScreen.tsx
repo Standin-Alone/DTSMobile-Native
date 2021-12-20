@@ -166,7 +166,7 @@ export default class DocInfoScreen extends Component {
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>{item.remarks}                  
+                  <Text style={styles.titleValue}>{item.rcl_remarks}                  
                   </Text>
 
 
@@ -195,7 +195,7 @@ export default class DocInfoScreen extends Component {
               isLoading={this.state.isLoading}
               disabledStyle={{opacity: 1}}
               onPress={this.handleGoToAttachmentScreen}>
-              Upload Attachments
+              Go To Attachments
             </Button>
           </View>
         </View>

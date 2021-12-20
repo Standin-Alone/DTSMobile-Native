@@ -26,6 +26,7 @@ import RecipientsScreen from '../components/transactions/RecipientsScreen';
 
 
 import BottomTabNavigator from './BottomTabNavigator';
+import TopTabNavigator from './TopTabNavigator';
 import { Root, Popup } from 'react-native-popup-confirm-toast';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import io from "socket.io-client";
@@ -42,7 +43,7 @@ function MyStack() {
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}} />                  
         <Stack.Screen name="OTP" component={OTPScreen} options={{headerShown:false}} />                          
         <Stack.Screen name="Authentication" component={SplashScreen} options={{headerShown:false}} />                  
-        <Stack.Screen name="Root" component={BottomTabNavigator} options={{headerShown:false}}  />       
+        <Stack.Screen name="Root" component={BottomTabNavigator} options={{headerShown:false,headerTransparent:true}}  />       
         <Stack.Screen name="Receive" component={ReceiveScreen}  />                             
         <Stack.Screen name="Release" component={ReleaseScreen}  />
 

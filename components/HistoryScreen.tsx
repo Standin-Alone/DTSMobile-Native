@@ -116,7 +116,7 @@ export default class HistoryScreen extends Component {
             size={10}
             color={Colors.color_palette.orange}
           />{' '}
-          {rowData.remarks == null ? 'None' : rowData.remarks} {'\n'}
+          {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks} {'\n'}
         </Text>
         : null
         }

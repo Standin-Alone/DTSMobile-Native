@@ -83,7 +83,9 @@ export default class LoginScreen extends Component {
 
 
       <View style={styles.container}>
+             
       <Image source={Images.splash_screen_logo} style={styles.logo} resizeMode={'contain'} />        
+       
         <View style={styles.login_form}>
           <Formik
             initialValues = {{username:'',password:''}}
@@ -188,15 +190,14 @@ const styles = StyleSheet.create({
       },
       loginTextInput:{  
         color:Colors.color_palette.orange_smoke,
+
         width: (Layout.window.width / 100 ) * 90,
         borderRadius:5,
         alignSelf:'center', 
         marginBottom:20
            
       },
-      formBody:{
-        backgroundColor:Colors.new_color_palette.second_background
-      },
+     
       textButton:{
         fontSize: 18,
         color:'white',
@@ -218,6 +219,11 @@ const styles = StyleSheet.create({
         borderRadius:5, 
         width: Layout.window.width - 40,
         marginBottom:20
+      },
+      bg:{
+        position:'absolute'
+        
+        
       }
 
 });

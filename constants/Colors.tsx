@@ -19,7 +19,8 @@ export default {
     divider:'#b4c0d3',
     text:'#545a64',
     blue:'#348fe2',
-    title:'#050A0D'
+    title:'#050A0D',
+    brown:'#A44524'
     
   },
   fade:'#ddd',

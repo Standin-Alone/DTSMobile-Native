@@ -110,7 +110,7 @@ export default class RecipientsScreen extends Component {
   componentDidMount() {
     this.props.navigation.addListener ('focus', async() =>{
       let document_number =this.state.params.document_info[0].document_number;
-      let my_office_code =this.state.params.document_info[0].recipient_office_code;
+      let my_office_code = await AsyncStorage.getItem('office_code');
       axios
       .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_offices/'+document_number+'/'+my_office_code)
       .then(response => {

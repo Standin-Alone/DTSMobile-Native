@@ -121,6 +121,21 @@ export default class QRCodeScreen extends Component{
                 },              
               })
               this.setState({isBarcodeRead:true});   
+            }else if(response.data['Message'] == 'This document process is already finished.'){
+              
+              Popup.show({
+                type: 'danger',              
+                title: 'Error!',
+                textBody: response.data['Message'],                
+                buttonText:'Ok',
+                okButtonStyle:styles.confirmButton,
+                okButtonTextStyle: styles.confirmButtonText,
+                callback: () => {    
+                  this.setState({isBarcodeRead:true});              
+                  Popup.hide()                                    
+                },              
+              })
+              this.setState({isBarcodeRead:true});   
             }else{
                     
               Popup.show({

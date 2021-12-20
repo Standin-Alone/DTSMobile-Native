@@ -17,10 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { createFilter } from "react-native-search-filter";
 import {Card} from 'react-native-paper';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 import Loader from '../constants/Loader';
-import TopTabNavigator from '../navigation/TopTabNavigator';
-import * as Animatable from 'react-native-animatable';
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
@@ -194,29 +192,53 @@ export default class HomeScreen extends Component {
   
     return (
       <View style={styles.container}>
-        <Animatable.View animation='slideInLeft' easing="ease-in-out" delay={500}>
-            <Fumi
-              label={'Search by tracking number'}
-              iconClass={FontAwesomeIcon}
-              iconName={'search'}
-              iconColor={Colors.new_color_palette.orange}
-              iconSize={20}
-              iconWidth={40}
-              inputPadding={16}
-              style={[styles.searchTextInput,{borderColor:this.state.isFocus == true ? Colors.new_color_palette.blue : Colors.new_color_palette.divider}]}
-              onBlur={()=>this.setState({isFocus:false})}
-              onFocus={()=>this.setState({isFocus:true})}
-              onChangeText = {(value)=>this.setState({search:value})}
-              keyboardType="email-address"
-            />
+        <Fumi
+          label={'Search by tracking number'}
+          iconClass={FontAwesomeIcon}
+          iconName={'search'}
+          iconColor={Colors.new_color_palette.orange}
+          iconSize={20}
+          iconWidth={40}
+          inputPadding={16}
+          style={styles.searchTextInput}
+          onChangeText = {(value)=>this.setState({search:value})}
+          keyboardType="email-address"
+        />
 
-        </Animatable.View>
+        <View style={{flex: 1}}>
+          <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
+            <View style={styles.documentsContainer}>
+              <FlatList
                  
-        <View style={{flex:1,top:(Layout.window.height /100) * 20}}>
-       
-          <TopTabNavigator/>
+                maxToRenderPerBatch={8}
+                windowSize={11}
+                initialNumToRender={8}            
+                scrollEnabled
+                data={this.state.data ? filteredDocuments : null}
+                renderItem={this.handleRenderItem}
+                extraData={this.state.data}
+                style={{top: 30, height: 100}}
+                
+                ListEmptyComponent={() => this.emptyComponent()}
+                contentContainerStyle={styles.flatListContainer}
+                onRefresh={this.handleRefreshData}
+                refreshing={this.state.refreshing}
+                //onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
+                // onEndReached={async ({distanceFromEnd}) => {
+                //   if (distanceFromEnd > 0) {                
+                    
+                //     await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
+                //     this.loadMore();
+                //   }
+                // }}
+              />
+            </View>
+          </View>         
         </View>
 
+        {this.state.isAppLoading && (
+          Loader.loader(this.state.spinner)
+        )}  
       
       </View>
     );
@@ -225,8 +247,10 @@ export default class HomeScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,    
-    backgroundColor: Colors.light,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.new_color_palette.blue_background,
   },
   title: {
     fontSize: 20,
@@ -246,14 +270,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 65,
     backgroundColor: Colors.new_color_palette.main_background,
   },
-  searchTextInput: {    
+  searchTextInput: {
+    top: 100,
     borderRadius: 40,
     width: (Layout.window.width / 100) * 90,
-    borderWidth:1,
-    borderColor:'#ddd',
-    top:100,
-    left:20,
-    
+    position: 'absolute',
   },
   card: {
     top: 20,

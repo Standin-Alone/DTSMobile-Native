@@ -237,11 +237,14 @@ export default class ReceiveScreen extends Component {
                   </Text>
                 </View>
 
+                
+
                 <View>
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
+                
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue} >{item.remarks} 
+                  <Text style={styles.titleValue} >{item.rcl_remarks} 
                   
                   </Text>
                 </View>

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable,ScrollView} from 'react-native';
+import {StyleSheet, Text, View, Pressable,ScrollView,TextInput} from 'react-native';
 import Layout from '../../constants/Layout';
 import Colors from '../../constants/Colors';
 import StepIndicatorStyle from '../../constants/StepIndicatorStyle';
@@ -27,7 +27,8 @@ export default class ReviewReleaseScreen extends Component {
     super(props);
     console.warn(this.props.route.params.selectedRecipients);
     this.state = {
-      scanned: false,  
+      remarks:'',
+      isFocus:false,
       files_to_upload: [],
       isLoading: false,
       openActionPicker:false,
@@ -116,7 +117,7 @@ export default class ReviewReleaseScreen extends Component {
         okButtonStyle: styles.confirmButton,
         okButtonTextStyle: styles.confirmButtonText,
         callback: () => {
-          Popup.hide();
+ 
           this.setState({isAppLoading: true});
        
           NetInfo.fetch().then(async response => {
@@ -153,6 +154,7 @@ export default class ReviewReleaseScreen extends Component {
 
             fd.append('doc_prefix', JSON.stringify(this.state.params.document_info[0].document_type));
             fd.append('action', JSON.stringify(action));
+            fd.append('remarks', JSON.stringify(this.state.remarks));
             
             fd.append(
               'recipients_office_code',
@@ -176,19 +178,20 @@ export default class ReviewReleaseScreen extends Component {
                   },
                 )
                 .then(response => {
-                  console.warn(response.data);
+                
                   this.setState({isAppLoading: false});
                   // check if status code is 200
                   if(response.status == 200){
+                    console.warn(response.data['Message']);
                     if (response.data['Message'] == 'true') {
                       console.warn( this.state.params.selectedRecipients)
-                      this.state.params.selectedRecipients.map(item =>
-                        SocketConnection.socket.emit('push notification', {
-                          channel:item,
-                            // response.data['doc_info'][0].sender_office_code,
-                          message: division + ' sucessfully release the document',
-                        }),
-                      );
+                      // this.state.params.selectedRecipients.map(item =>
+                      //   SocketConnection.socket.emit('push notification', {
+                      //     channel:item,
+                      //       // response.data['doc_info'][0].sender_office_code,
+                      //     message: division + ' sucessfully release the document',
+                      //   }),
+                      // );
 
                    
                       Popup.show({
@@ -388,21 +391,42 @@ export default class ReviewReleaseScreen extends Component {
                   </Text>
                 </View>
 
-                <View>
+                {/* <View>
                   <Text style={styles.detailTitle}>Remarks:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  <Text style={styles.titleValue}>{item.remarks}
+                  <Text style={styles.titleValue}>{item.rcl_remarks}
                                     
                   </Text>                  
-                </View>
+                </View> */}
 
             
 
               </ScrollView>
              ))} 
 
-              <ScrollView style={[styles.moreInfoCard]}>
+               <ScrollView style={[styles.moreInfoCard]}>
+               <View>
+                  <Text style={styles.detailTitle}>Remarks (Optional):</Text>
+                </View>
+
+                <View>
+                  <TextInput 
+
+                    multiline={true}
+                    style={[styles.remarks,{borderColor: this.state.isFocus == true ? Colors.new_color_palette.blue : Colors.new_color_palette.title,color:Colors.new_color_palette.orange}]}
+                    onFocus = {()=>this.setState({isFocus:true})}
+                    onBlur={()=>this.setState({isFocus:false})}
+                    onChangeText={(value)=>this.setState({remarks:value})}
+                    
+                  
+                  />
+                  
+                </View>
+                        
+              </ScrollView>
+
+              {/* <ScrollView style={[styles.moreInfoCard]}>
                   <List.Accordion                    
                         style={[
                             styles.detailTitle,
@@ -448,7 +472,7 @@ export default class ReviewReleaseScreen extends Component {
 
 
                         
-              </ScrollView>
+              </ScrollView> */}
 
 
 
@@ -550,9 +574,9 @@ const styles = StyleSheet.create({
     top: 20,
     backgroundColor: Colors.new_color_palette.main_background,
     width: (Layout.window.width / 100) * 95,
-    height: (Layout.window.height / 100) * 45,
+    height: (Layout.window.height / 100) * 40,
     borderRadius: 15,
-    minHeight: (Layout.window.height / 100) * 45,
+    minHeight: (Layout.window.height / 100) * 40,
   },
   moreInfoCard: {
     top:30,
@@ -595,5 +619,12 @@ const styles = StyleSheet.create({
   },
   file_item: {
     color: Colors.new_color_palette.orange
+  },
+  remarks: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius:10
   },
 });
