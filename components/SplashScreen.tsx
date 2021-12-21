@@ -8,7 +8,7 @@ import Layout from '../constants/Layout';
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from '../constants/Colors';
-import { Alert } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 export default class SplashScreenContainer extends React.Component {
 
@@ -49,10 +49,9 @@ componentDidMount(){
 
   
   return (
-    <View style={styles.container}>
-        <Image source={Images.splash_screen_logo} style={styles.logo}  resizeMode={'contain'}/>
-        
-    </View>
+    <Animatable.View style={styles.container} animation= 'fadeInDownBig' duration={1000}>
+        <Image source={Images.splash_screen_logo} style={styles.logo}  resizeMode={'contain'}/>        
+    </Animatable.View>
   );
 
 }

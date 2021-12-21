@@ -29,6 +29,8 @@ export default class HistoryScreen extends Component {
         headerTintColor: Colors.new_color_palette.orange,
       },
     };
+
+    console.warn(this.props.route.params)
   }
 
   get_history = () => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {
     StyleSheet,    
@@ -11,25 +12,29 @@ import Colors from '../constants/Colors';
 const Tab = createMaterialTopTabNavigator();
 
 
-export default function TopTabNavigator() {
+export default function TopTabNavigator(props) {
+  
   const  handleTabPress = ({navigation})=>{
     navigation.popToTop();
     navigation.navigate(navigation.state.routeName);
   }
   return (
-    <Tab.Navigator screenOptions={{tabBarStyle:styles.screen}}  >
-      <Tab.Screen name="Incoming" component={IncomingScreen} options={{
+    
+    <Tab.Navigator screenOptions={{tabBarStyle:styles.screen }}  
+    
+  
+    >
+      
+      <Tab.Screen name="Incoming" component={({navigation})=><IncomingScreen docType={props.docType.type_id} navigation = {navigation}/>}
+          
+      
+      options={{
           
           tabBarItemStyle:styles.tabBarCard,
           tabBarContentContainerStyle:styles.content,
           tabBarActiveTintColor:Colors.new_color_palette.brown,          
           tabBarLabelStyle:styles.label, 
           tabBarIcon: ()=><Icon name="file-download" size={20} color={Colors.new_color_palette.orange}/>,
-          
-   
-                
-
-          
       }}
       
         listeners={({navigation,defaultHandler})=>({tabPress:e=>{
@@ -72,6 +77,7 @@ label:{
 },
 screen:{
     elevation:0,    
+    bottom:20
 }
 
 });

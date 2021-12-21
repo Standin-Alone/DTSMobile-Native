@@ -8,11 +8,13 @@ import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import * as ipConfig from '../../ipconfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {createFilter} from 'react-native-search-filter';
 import {Card} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import Loader from '../../constants/Loader';
+import { withNavigation } from 'react-navigation';
 export default class IncomingScreen extends Component {
   constructor(props) {
     super(props);
@@ -29,11 +31,13 @@ export default class IncomingScreen extends Component {
         size: 60,
       },
     };
+    
+
   }
 
   handleRefreshData = async () => {
     let user_id = await AsyncStorage.getItem('user_id');
-
+    
     NetInfo.fetch().then(async response => {
       let payload = {
         office_code: await AsyncStorage.getItem('office_code'),
@@ -41,15 +45,17 @@ export default class IncomingScreen extends Component {
       };
       if (response.isConnected) {
         axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+          .get(ipConfig.ipAddress + 'MobileApp/Mobile/incoming_documents/'+payload.office_code)
           .then(response => {
-            console.warn(response);
+            
             if (response.data['Message'] == 'true') {
+              console.warn(response);
               this.setState({data: response.data['doc_info']});
               this.setState({refreshing: false});
             }
           })
           .catch(error => {
+            console.warn(error);
             this.setState({refreshing: false});
           });
       }
@@ -62,7 +68,9 @@ export default class IncomingScreen extends Component {
   }
 
   handleRenderItem = ({item}) => (
-    <Animatable.View  animation="slideInDown" duration={5000}>
+
+    this.props.docType == 'All'  ||  this.props.docType == undefined  ?
+    <Animatable.View  animation="slideInDown" duration={1000}>
       <Card
         style={{
           width: (Layout.window.width / 100) * 95,
@@ -79,18 +87,19 @@ export default class IncomingScreen extends Component {
           subtitle={'Subject: ' + item.subject}
           subtitleNumberOfLines={10}
           left={() => (
-            <FontAwesomeIcon
-              name="file"
+            <FontAwesome5
+              name="file-upload"
               size={30}
               color={Colors.new_color_palette.blue}
             />
           )}
           right={() => (
-            <FontAwesomeIcon
+            <FontAwesome5
               name="eye"
               size={30}
               color={Colors.new_color_palette.orange}
               onPress={() =>
+              
                 this.props.navigation.navigate('History', {
                   document_info: [item],
                 })
@@ -101,6 +110,49 @@ export default class IncomingScreen extends Component {
         />
       </Card>
     </Animatable.View>
+    :  this.props.docType == item.document_type   ?
+    <Animatable.View  animation="slideInDown" duration={1000}>
+    <Card
+      style={{
+        width: (Layout.window.width / 100) * 95,
+        left: 10,
+        marginTop: 20,
+        backgroundColor: Colors.new_color_palette.main_background,
+        borderRadius: 20,
+        borderWidth: 1,
+      }}
+      elevation={0}>
+      <Card.Title
+        title={item.document_number}
+        titleStyle={styles.documentNumber}
+        subtitle={'Subject: ' + item.subject}
+        subtitleNumberOfLines={10}
+        left={() => (
+          <FontAwesome5
+            name="file-upload"
+            size={30}
+            color={Colors.new_color_palette.blue}
+          />
+        )}
+        right={() => (
+          <FontAwesome5
+            name="eye"
+            size={30}
+            color={Colors.new_color_palette.orange}
+            onPress={() =>
+              this.props.navigation.navigate('History', {
+                document_info: [item],
+              })
+            }
+          />
+        )}
+        rightStyle={{right: 10}}
+      />
+    </Card>
+  </Animatable.View> 
+    :null
+            
+  
   );
 
   // old  render item
@@ -151,47 +203,11 @@ export default class IncomingScreen extends Component {
   //this component will show if flatlist is empty
   emptyComponent = () => (
     <View style={styles.empty}>
-      <Text style={styles.emptyText}>You have no documents received.</Text>
+      <Text style={styles.emptyText}>You have no incoming documents.</Text>
     </View>
   );
 
-  loadMore = async () => {
-    console.warn('helo');
-    this.setState({isAppLoading: true});
-    let addPage = this.state.currentPage;
 
-    let payload = {
-      office_code: await AsyncStorage.getItem('office_code'),
-      current_page: addPage,
-    };
-
-    NetInfo.fetch().then((response: any) => {
-      if (response.isConnected) {
-        axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
-          .then(async response => {
-            if (response.status == 200) {
-              if (response.data['Message'] == 'true') {
-                console.warn(response.data['doc_info'][0]);
-
-                response.data['doc_info'].map(item =>
-                  this.setState({data: [...this.state.data, item]}),
-                );
-              }
-            }
-            this.setState({refreshing: false, isAppLoading: false});
-          })
-          .catch(error => {
-            alert('Error!', 'Something went wrong.');
-
-            this.setState({refreshing: false, isAppLoading: false});
-          });
-      } else {
-        this.setState({refreshing: false, isAppLoading: false});
-        alert('Message', 'No Internet Connection.');
-      }
-    });
-  };
 
   render() {
     const filteredDocuments = this.state.data.filter(
@@ -218,14 +234,7 @@ export default class IncomingScreen extends Component {
           contentContainerStyle={styles.flatListContainer}
           onRefresh={this.handleRefreshData}
           refreshing={this.state.refreshing}
-          //onEndReachedThreshold={0.1} // so when you are at 5 pixel from the bottom react run onEndReached function
-          // onEndReached={async ({distanceFromEnd}) => {
-          //   if (distanceFromEnd > 0) {
-
-          //     await this.setState((prevState)=>({currentPage: prevState.currentPage + 1}));
-          //     this.loadMore();
-          //   }
-          // }}
+      
         />
       </Animatable.View>
     );
@@ -295,7 +304,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flexGrow: 0,
-    paddingBottom: (Layout.window.height / 100) * 15,
+    paddingBottom: (Layout.window.height / 100) * 35,
   },
   empty: {
     top: 5,

@@ -17,18 +17,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { createFilter } from "react-native-search-filter";
 import {Card} from 'react-native-paper';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 import Loader from '../constants/Loader';
 import TopTabNavigator from '../navigation/TopTabNavigator';
 import * as Animatable from 'react-native-animatable';
+import { Dropdown } from 'react-native-element-dropdown';
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      openDropdown:false,
+      
       data: [],
       isAppLoading:false,
       refreshing: false,
       currentPage: 1,
+      selectedDocType:[],
       search:'',
       KEYS_TO_FILTERS:['document_number'],
       spinner: {
@@ -42,25 +46,33 @@ export default class HomeScreen extends Component {
 
   handleRefreshData = async () => {
     let user_id = await AsyncStorage.getItem('user_id');
-
+    
     NetInfo.fetch().then(async response => {
-      let payload = {
-        office_code: await AsyncStorage.getItem('office_code'),
-        current_page:1,
-      };
+      
       if (response.isConnected) {
+        
         axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+          .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_doc_type')
           .then(response => {
-            console.warn(response)
+            
             if (response.data['Message'] == 'true') {
-              this.setState({data:response.data['doc_info']})            
+              // this.setState(prevState=> ([...prevState.data,response.data['doc_type']]))            
+
+
+              response.data['doc_type'].unshift({type_id:'All',type:'All'}) 
+                console.warn( response.data['doc_type'])
+              this.setState({data:response.data['doc_type']});
+
               this.setState({refreshing: false});
             }
           })
           .catch(error => {            
+            console.warn(error)
             this.setState({refreshing: false});
           });
+          
+      }else{
+        
       }
     });
   };
@@ -69,128 +81,19 @@ export default class HomeScreen extends Component {
  
 
     this.setState({refreshing: true});
+    
     this.handleRefreshData();
   }
 
 
 
-  handleRenderItem = ({item}) => (
-    
-    <Card style={{width:(Layout.window.width / 100) * 95,left:10,marginTop:20,backgroundColor:Colors.new_color_palette.main_background}} elevation={0}>
-      <Card.Title 
-       
 
-          title= {item.document_number}
-         
 
-      
-          titleStyle = {styles.documentNumber}
-          subtitle=  {'Subject: '+item.subject}
-          subtitleNumberOfLines={10}
-          left  = {()=><FontAwesomeIcon  name="file" size={30}  color={Colors.new_color_palette.blue}/>} 
-          right = {()=><FontAwesomeIcon  name="eye" size={30}  color={Colors.new_color_palette.orange} onPress = {()=>this.props.navigation.navigate('History', {document_info: [item]})}/>}                        
-      />
-          
-      
-    </Card>
-  );
 
-  // old  render item
-  // handleRenderItem = ({item}) => (
-  //   <View style={styles.card}>
-  //     <View style={{flexDirection: 'row', width: '100%'}}>
-  //       <FontAwesome
-  //         name="file"
-  //         size={50}
-  //         color={Colors.color_palette.orange}
-  //         style={{marginLeft: 60, top: 10, right: 0, left: 0}}
-  //       />
-  //       <Text style={styles.documentNumber} adjustsFontSizeToFit>
-  //         {item.document_number}
-  //       </Text>
-  //       <TouchableOpacity
 
-  //         style={styles.viewButton}
-  //         onPress={() =>{
-            
-  //           this.props.navigation.navigate('History', {document_info: [item]})            
-            
-  //         }
-  //         }>
-  //         <Text style={styles.viewHistory}>View</Text>
-          
-  //       </TouchableOpacity>
-  //     </View>
-  //     <Text
-  //       style={{
-  //         left: 115,
-  //         fontSize: 10,
-  //         bottom: 20,
-  //         color: Colors.new_color_palette.text,
-  //       }}
-  //       adjustsFontSizeToFit>
-  //       {item.subject}
-  //     </Text>
-  //     <Text>{'\n'}</Text>
-  //     <View
-  //       style={{
-  //         borderBottomWidth: 2,
-  //         borderBottomColor: Colors.new_color_palette.divider,
-  //       }}></View>
-  //   </View>
-  // );
-
-  //this component will show if flatlist is empty
-  emptyComponent = () => (
-    <View style={styles.empty}>
-      <Text style={styles.emptyText}>You have no documents received.</Text>
-    </View>
-  );
-
-  loadMore = async () => {
-    console.warn('helo')
-    this.setState({isAppLoading:true})
-    let addPage = this.state.currentPage;
-    
-    
-    let payload = {
-      office_code: await AsyncStorage.getItem('office_code'),
-      current_page:addPage,
-    };
-    
-    NetInfo.fetch().then((response: any) => {
-      if (response.isConnected) {
-        axios
-        .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
-          .then(async (response) => {
-            if (response.status == 200) {
-              if (response.data['Message'] == 'true') {
-                console.warn(response.data['doc_info'][0]);
-        
-                  response.data['doc_info'].map((item)=>this.setState({data:[...this.state.data,item]}))
-                   
-            
-                
-              }
-            }
-            this.setState({refreshing: false,isAppLoading:false});
-          })
-          .catch((error) => {
-            alert('Error!','Something went wrong.')
-            
-            this.setState({refreshing: false,isAppLoading:false});
-          });
-      } else {
-        this.setState({refreshing: false,isAppLoading:false});
-        alert("Message", "No Internet Connection.");
-      }
-    });
-  };
 
   render() {
-    const filteredDocuments = this.state.data.filter(
-      createFilter(this.state.search, this.state.KEYS_TO_FILTERS)
-    );
+console.warn(this.state.selectedDocType)
   
     return (
       <View style={styles.container}>
@@ -213,8 +116,31 @@ export default class HomeScreen extends Component {
         </Animatable.View>
                  
         <View style={{flex:1,top:(Layout.window.height /100) * 20}}>
-       
-          <TopTabNavigator/>
+
+        
+        <Dropdown
+            style={styles.dropDown}        
+            data={this.state.data}
+            search
+            maxHeight={300}
+            containerStyle={{color:Colors.new_color_palette.title}}
+            selectedTextStyle = {{color:Colors.new_color_palette.title,left:25}}
+            placeholderStyle = {{color:Colors.new_color_palette.title,left:25}}
+            labelField="type"
+            valueField="type_id"
+            placeholder="Select Type of Document"
+            searchPlaceholder="Search..."
+                        
+            onChange={item => this.setState({selectedDocType:item})}          
+            renderLeftIcon={() => (
+              <FontAwesome  color="black" name="file-text" color={Colors.new_color_palette.blue} size={20} style={{left:20}} />
+            )}
+          />  
+
+      
+              
+              
+          <TopTabNavigator docType={this.state.selectedDocType}/>
         </View>
 
       
@@ -232,20 +158,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  documentsContainer: {
-    bottom: 0,
-    width: (Layout.window.width / 100) * 102,
-    height: (Layout.window.height / 100) * 75,
-    right: (Layout.window.width / 100) * 50,
-    borderTopLeftRadius: 65,
-    borderTopRightRadius: 65,
-    backgroundColor: Colors.new_color_palette.main_background,
-  },
+ 
+
   searchTextInput: {    
     borderRadius: 40,
     width: (Layout.window.width / 100) * 90,
@@ -307,5 +221,27 @@ const styles = StyleSheet.create({
     width:(Layout.window.width / 100) * 20,
     borderRadius:20,
   
+  },
+  filterButton:{
+    alignItems:'center',
+    borderColor:Colors.new_color_palette.blue,
+    borderWidth:1,
+    width:(Layout.window.width / 100) * 20,
+    borderRadius:20,
+    marginLeft:20
+
+    
+    
+  },
+  dropDown:{    
+    borderWidth:1,
+    borderRadius:15,
+    top:(Layout.window.height / 100) * 12,        
+    flexGrow: 0, 
+    zIndex:1,
+    left:20,
+    width:(Layout.window.width / 100) * 90,
+    borderColor:Colors.new_color_palette.divider  
+
   }
 });
