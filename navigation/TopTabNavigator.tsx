@@ -44,7 +44,11 @@ export default function TopTabNavigator(props) {
         }})}
       />      
 
-      <Tab.Screen name="Outgoing" component={OutgoingScreen}  options ={{
+      <Tab.Screen name="Outgoing" 
+          component={({navigation})=><OutgoingScreen docType={props.docType.type_id} navigation = {navigation}/>}
+      
+      
+      options ={{
           tabBarItemStyle:styles.tabBarCard,
           tabBarContentContainerStyle:styles.content,
           tabBarActiveTintColor:Colors.new_color_palette.brown,
@@ -77,7 +81,7 @@ label:{
 },
 screen:{
     elevation:0,    
-    bottom:20
+    bottom:10
 }
 
 });

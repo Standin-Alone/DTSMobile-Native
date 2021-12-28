@@ -88,7 +88,7 @@ export default class IncomingScreen extends Component {
           subtitleNumberOfLines={10}
           left={() => (
             <FontAwesome5
-              name="file-upload"
+              name="file-download"
               size={30}
               color={Colors.new_color_palette.blue}
             />
@@ -150,7 +150,9 @@ export default class IncomingScreen extends Component {
       />
     </Card>
   </Animatable.View> 
-    :null
+    :<View style={styles.empty}>
+    <Text style={styles.emptyText}>You have no incoming documents.</Text>
+  </View>
             
   
   );
@@ -307,7 +309,7 @@ const styles = StyleSheet.create({
     paddingBottom: (Layout.window.height / 100) * 35,
   },
   empty: {
-    top: 5,
+    top: 40,
     left: (Layout.window.height / 100) * 3,
   },
   emptyText: {
