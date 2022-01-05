@@ -129,7 +129,7 @@ export default class HomeScreen extends Component {
             )}
           />
 
-          <TopTabNavigator docType={this.state.selectedDocType} />
+          <TopTabNavigator docType={this.state.selectedDocType} searchValue={this.state.search}/>
         </View>
       </View>
     );
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   dropDown: {
     borderWidth: 1,
     borderRadius: 15,
-    top: (Layout.window.height / 100) * 12,
+    top: (Layout.window.height / 100) * 15,
     flexGrow: 0,
     zIndex: 1,
     left: 20,

@@ -15,6 +15,7 @@ import {Card} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import Loader from '../../constants/Loader';
 import { withNavigation } from 'react-navigation';
+import Moment from 'react-moment';
 export default class IncomingScreen extends Component {
   constructor(props) {
     super(props);
@@ -108,6 +109,13 @@ export default class IncomingScreen extends Component {
           )}
           rightStyle={{right: 10}}
         />
+
+    <Card.Content>
+    <Moment element={Text}  
+            style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}
+      
+          fromNow>{ item.date_added}</Moment>
+    </Card.Content>
       </Card>
     </Animatable.View>
     :  this.props.docType == item.document_type   ?
@@ -148,6 +156,12 @@ export default class IncomingScreen extends Component {
         )}
         rightStyle={{right: 10}}
       />
+       <Card.Content>
+      <Moment element={Text}  
+              style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}
+        
+            fromNow>{ item.date_added}</Moment>
+      </Card.Content>
     </Card>
   </Animatable.View> 
     :<View style={styles.empty}>
@@ -213,7 +227,7 @@ export default class IncomingScreen extends Component {
 
   render() {
     const filteredDocuments = this.state.data.filter(
-      createFilter(this.state.search, this.state.KEYS_TO_FILTERS),
+      createFilter(this.props.searchValue, this.state.KEYS_TO_FILTERS),
     );
 
     return (

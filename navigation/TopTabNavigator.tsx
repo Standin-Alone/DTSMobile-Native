@@ -25,7 +25,7 @@ export default function TopTabNavigator(props) {
   
     >
       
-      <Tab.Screen name="Incoming" component={({navigation})=><IncomingScreen docType={props.docType.type_id} navigation = {navigation}/>}
+      <Tab.Screen name="Incoming" component={({navigation})=><IncomingScreen docType={props.docType.type_id} searchValue = {props.searchValue} navigation = {navigation}/>}
           
       
       options={{
@@ -45,7 +45,7 @@ export default function TopTabNavigator(props) {
       />      
 
       <Tab.Screen name="Outgoing" 
-          component={({navigation})=><OutgoingScreen docType={props.docType.type_id} navigation = {navigation}/>}
+          component={({navigation})=><OutgoingScreen docType={props.docType.type_id} searchValue = {props.searchValue}  navigation = {navigation}/>}
       
       
       options ={{

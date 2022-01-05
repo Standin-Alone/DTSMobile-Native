@@ -13,6 +13,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {createFilter} from 'react-native-search-filter';
 import {Card} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
+import Moment from 'react-moment';
 import Loader from '../../constants/Loader';
 import { withNavigation } from 'react-navigation';
 export default class OutgoingScreen extends Component {
@@ -109,6 +110,12 @@ export default class OutgoingScreen extends Component {
           )}
           rightStyle={{right: 10}}
         />
+
+      <Card.Content>
+        <Moment element={Text}  
+              style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}
+              fromNow>{ item.log_date}</Moment>
+      </Card.Content>
       </Card>
     </Animatable.View>
     :  this.props.docType == item.document_type   ?
@@ -149,6 +156,11 @@ export default class OutgoingScreen extends Component {
         )}
         rightStyle={{right: 10}}
       />
+       <Card.Content>
+        <Moment element={Text}  
+              style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}   
+              fromNow>{ item.log_date}</Moment>
+      </Card.Content>
     </Card>
   </Animatable.View> 
     :null
@@ -212,7 +224,7 @@ export default class OutgoingScreen extends Component {
 
   render() {
     const filteredDocuments = this.state.data.filter(
-      createFilter(this.state.search, this.state.KEYS_TO_FILTERS),
+      createFilter(this.props.searchValue, this.state.KEYS_TO_FILTERS),
     );
 
     return (
