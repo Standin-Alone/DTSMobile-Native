@@ -16,10 +16,6 @@
       android:usesCleartextTraffic="true"
 
       >
-
-
-
-
       
       <activity
         android:name=".MainActivity"
