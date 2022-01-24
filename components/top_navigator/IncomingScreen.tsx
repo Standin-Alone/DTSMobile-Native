@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   },
   empty: {
     top: 40,
-    left: (Layout.window.height / 100) * 3,
+    left: (Layout.window.height / 100) * 1,
   },
   emptyText: {
     color: Colors.new_color_palette.text,

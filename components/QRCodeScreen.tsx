@@ -45,16 +45,17 @@ export default class QRCodeScreen extends Component{
         user_id : await AsyncStorage.getItem('user_id'),        
       } 
       
+      
 
       if(this.state.isBarcodeRead){
       NetInfo.fetch().then( (response)=>{
         if(response.isConnected){
           axios.post(ipConfig.ipAddress+'MobileApp/Mobile/get_scanned_document',payload).then((response)=>{
-            console.warn(response.data);
+            console.warn(response.data['Message'] )
             this.setState({isBarcodeRead:false});
             if(response.data['Message'] == 'true'){
 
-              
+              console.warn(response.data['doc_info'])
               
               Popup.show({
                 type: 'success',              
@@ -136,12 +137,27 @@ export default class QRCodeScreen extends Component{
                 },              
               })
               this.setState({isBarcodeRead:true});   
+            }else if(response.data['Message'] == 'This document is not yet release.'){
+              
+              Popup.show({
+                type: 'danger',              
+                title: 'Error!',
+                textBody: response.data['Message'],                
+                buttonText:'Ok',
+                okButtonStyle:styles.confirmButton,
+                okButtonTextStyle: styles.confirmButtonText,
+                callback: () => {    
+                  this.setState({isBarcodeRead:true});              
+                  Popup.hide()                                    
+                },              
+              })
+              this.setState({isBarcodeRead:true});   
             }else{
                     
               Popup.show({
                 type: 'danger',              
                 title: 'Error!',
-                textBody: "Something went wrong.",                
+                textBody: response.data['Message'],                
                 buttonText:'Ok',
                 okButtonStyle:styles.confirmButton,
                 okButtonTextStyle: styles.confirmButtonText,

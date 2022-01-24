@@ -256,8 +256,9 @@ export default class ReleaseScreen extends React.Component {
 
   // handle release button
   handleRelease = async (action) => {
+    
     // check if it has selected recipients
-    if (this.state.selectedRecipients.length != 0) {
+    if (this.state.selectedRecipients.length != 0 ) {
       // show confirmation before receive the document
       Popup.show({
         type: 'confirm',
@@ -270,7 +271,8 @@ export default class ReleaseScreen extends React.Component {
         callback: () => {
           Popup.hide();
           this.setState({isAppLoading: true});
-          console.warn(this.state.base64_files)
+            
+          
           NetInfo.fetch().then(async response => {
             // Initialize Form Data
             let fd = new FormData();

@@ -1,4 +1,4 @@
-const labels = ["Review Document","Attachments (Optional)","Recipients","Release"];
+const labels = ["Review Document","Attachments (Optional)","Action and Recipients","Release"];
 
 const customStyles = {    
     stepIndicatorSize: 45,

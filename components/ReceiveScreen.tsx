@@ -71,7 +71,7 @@ export default class ReceiveScreen extends Component {
 
   componentDidMount() {
 
-    console.warn( this.state.params)
+    
     this.props.navigation.setOptions(this.state.receiveFormOptions);
   }
 
@@ -81,6 +81,7 @@ export default class ReceiveScreen extends Component {
 
   // handle receive button
   handleReceive = async () => {
+
     // show confirmation before receive the document
     Popup.show({
       type: 'confirm',
@@ -91,6 +92,7 @@ export default class ReceiveScreen extends Component {
       okButtonStyle: styles.confirmButton,
       okButtonTextStyle: styles.confirmButtonText,
       callback: () => {
+        Popup.hide();
         this.setState({isAppLoading: true});
         NetInfo.fetch().then(async response => {
           let data = {
@@ -101,6 +103,7 @@ export default class ReceiveScreen extends Component {
             info_division: await AsyncStorage.getItem('division'),
             info_service: await AsyncStorage.getItem('service'),
           };
+  
 
           if (response.isConnected) {
             // perform axios here
@@ -111,17 +114,17 @@ export default class ReceiveScreen extends Component {
               )
               .then(async response => {
         
-
+                console.warn(response.data['doc_info']);
              
 
                 if (response.data['Message'] == 'true') {
                     
                   // push notification
-                  SocketConnection.socket.emit('push notification', {
-                    channel: response.data['doc_info'][0].sender_office_code,
-                    message:
-                      data.info_division + ' sucessfully received the document',
-                  });
+                 SocketConnection.socket.emit('push notification', {
+                   channel: this.state.params.document_info[0].sender_office_code,
+                   message:
+                     data.info_division + ' sucessfully received the document',
+                 });
 
                   Popup.show({
                     type: 'success',
@@ -155,7 +158,7 @@ export default class ReceiveScreen extends Component {
                 }
               })
               .catch(err => {
-                console.warn(err.response.data);
+                console.warn(err);
                 this.setState({isAppLoading: false});
                 Popup.hide();
               });

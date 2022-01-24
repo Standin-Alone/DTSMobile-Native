@@ -66,44 +66,39 @@ export default function Route(){
 
 
   
-  SocketConnection.socket.on('connect', msg => {
-      console.warn('connected');
-    SocketConnection.socket.on('get notification', async message => {
-      let user_id = await AsyncStorage.getItem('user_id');
-      let office_code = await AsyncStorage.getItem('office_code');
-      if (message.channel == office_code) {
-        console.warn('connected');
+  // SocketConnection.socket.on('connect', msg => {
+  //     console.warn('connected');
+  //   SocketConnection.socket.on('get notification', async message => {
+  //     let user_id = await AsyncStorage.getItem('user_id');
+  //     let office_code = await AsyncStorage.getItem('office_code');
+  //     if (message.channel == office_code) {
+  //       console.warn('connected');
 
-        // create channel for notification
-        PushNotification.createChannel({
-          channelId: message.channel,
-          channelName: message.channel,
-          soundName: 'default',     
-          vibrate: true,
-        });
+  //       // create channel for notification
+  //       PushNotification.createChannel({
+  //         channelId: message.channel,
+  //         channelName: message.channel,
+  //         soundName: 'default',     
+  //         vibrate: true,
+  //       });
 
-        // create channel for notification
-        PushNotification.localNotification({
-          channelId: message.channel, // (required)
-          channelName: message.channel,
-          autoCancel: true,
+  //       // create channel for notification
+  //       PushNotification.localNotification({
+  //         channelId: message.channel, // (required)
+  //         channelName: message.channel,
+  //         autoCancel: true,
 
-          subText: 'Notification',
-          title: 'Document Tracking System',
-          message: message.message,
-          vibrate: true,
-          vibration: 300,
-          playSound: true,
-          soundName: 'default',
-        });
-      }
-    });
-  });
-
-  SocketConnection.socket.on('connect_error', function(err) {
-
-    // console.warn(err);
-  });
+  //         subText: 'Notification',
+  //         title: 'Document Tracking System',
+  //         message: message.message,
+  //         vibrate: true,
+  //         vibration: 300,
+  //         playSound: true,
+  //         soundName: 'default',
+  //       });
+  //     }
+  //   });
+  // });
 
   
   // SocketConnection.socket.on("disconnect", (reason) => {

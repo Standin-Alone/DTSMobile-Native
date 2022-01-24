@@ -76,6 +76,7 @@ export default class HomeScreen extends Component {
         <Animatable.View
           animation="slideInLeft"
           easing="ease-in-out"
+     
           delay={500}>
           <Fumi
             label={'Search by tracking number'}
@@ -92,6 +93,7 @@ export default class HomeScreen extends Component {
                   this.state.isFocus == true
                     ? Colors.new_color_palette.blue
                     : Colors.new_color_palette.divider,
+                
               },
             ]}
             onBlur={() => this.setState({isFocus: false})}
@@ -129,7 +131,7 @@ export default class HomeScreen extends Component {
             )}
           />
 
-          <TopTabNavigator docType={this.state.selectedDocType} searchValue={this.state.search}/>
+          <TopTabNavigator docType={this.state.selectedDocType} searchValue={this.state.search} />
         </View>
       </View>
     );
@@ -151,16 +153,8 @@ const styles = StyleSheet.create({
     width: (Layout.window.width / 100) * 90,
     borderWidth: 1,
     borderColor: '#ddd',
-    top: 100,
+    top:(Layout.window.height / 100) * 10 ,
     left: 20,
-  },
-  card: {
-    top: 20,
-    width: (Layout.window.width / 100) * 120,
-    height: (Layout.window.height / 100) * 20,
-    minHeight: (Layout.window.height / 100) * 30,
-    right: 40,
-    // backgroundColor:Colors.color_palette.base
   },
   documentNumber: {
     color: Colors.new_color_palette.title,

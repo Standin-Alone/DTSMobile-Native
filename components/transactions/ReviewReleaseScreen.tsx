@@ -45,7 +45,7 @@ export default class ReviewReleaseScreen extends Component {
         {key: 1, label: 'Approved'},
         {key: 2, label: 'Disapproved'},
         {key: 3, label: 'Endorsed'},
-        {key: 4, label: 'Return To Sender'},
+        {key: 4, label: 'Return to Sender'},
         {key: 5, label: 'No Action'},
       ],
       receiveFormOptions: {
@@ -98,15 +98,15 @@ export default class ReviewReleaseScreen extends Component {
   handleSelectAction = ()=>  {
 
     
-    this.setState({openActionPicker: this.state.openActionPicker == false ? true : false})    
+    
     
   }   
   //handle Release Document
-  handleRelease = async (action) => {
-    let consolidate_recipients = action ==  'Return To Sender' ? this.state.params.selectedRecipients.concat(this.state.params.document_info[0].sender_office_code) : this.state.params.selectedRecipients ;
-
+  handleRelease = async () => {
+    let consolidate_recipients = this.state.params.action ==  'Return to Sender' ? this.state.params.selectedRecipients.concat(this.state.params.document_info[0].sender_office_code) : this.state.params.selectedRecipients ;
+    
     // check if it has selected recipients
-    if (consolidate_recipients.length != 0) {
+    if (consolidate_recipients.length != 0  ) {
       // show confirmation before receive the document
       Popup.show({
         type: 'confirm',
@@ -117,7 +117,7 @@ export default class ReviewReleaseScreen extends Component {
         okButtonStyle: styles.confirmButton,
         okButtonTextStyle: styles.confirmButtonText,
         callback: () => {
- 
+          
           this.setState({isAppLoading: true});
        
           NetInfo.fetch().then(async response => {
@@ -153,7 +153,7 @@ export default class ReviewReleaseScreen extends Component {
             );
 
             fd.append('doc_prefix', JSON.stringify(this.state.params.document_info[0].document_type));
-            fd.append('action', JSON.stringify(action));
+            fd.append('action', JSON.stringify(this.state.params.action));
             fd.append('remarks', JSON.stringify(this.state.remarks));
             
             fd.append(
@@ -164,8 +164,9 @@ export default class ReviewReleaseScreen extends Component {
               'file_attachments',
               JSON.stringify(this.state.params.base64_files),
             );
-
+              
             if (response.isConnected) {
+              
               // perform axios here
               axios
                 .post(
@@ -178,7 +179,7 @@ export default class ReviewReleaseScreen extends Component {
                   },
                 )
                 .then(response => {
-                
+                  console.warn(response)
                   this.setState({isAppLoading: false});
                   // check if status code is 200
                   if(response.status == 200){
@@ -224,7 +225,7 @@ export default class ReviewReleaseScreen extends Component {
                         okButtonTextStyle: styles.confirmButtonText,
                         modalContainerStyle: styles.confirmModal,
                         callback: () => {
-
+                          Popup.hide();
                           this.props.navigation.reset({
                             index: 0,
                             routes: [{ name: 'Root' }]
@@ -232,7 +233,7 @@ export default class ReviewReleaseScreen extends Component {
 
 
                           this.setState({isAppLoading: false});
-                          Popup.hide();
+                          
                         },
                       });
                     }
@@ -261,7 +262,7 @@ export default class ReviewReleaseScreen extends Component {
                 })
                 .catch(error => {
                   this.setState({isAppLoading: false});
-                  // console.log(error.response.data);
+                  console.log(error.response.data);
                   Popup.hide();
                 });
             } else {
@@ -504,7 +505,7 @@ export default class ReviewReleaseScreen extends Component {
               activeOpacity={100}
               isLoading={this.state.isLoading}
               disabledStyle={{opacity: 1}}
-              onPress={this.handleSelectAction}>
+              onPress={this.handleRelease}>
                 Release Document
 
             </Button>

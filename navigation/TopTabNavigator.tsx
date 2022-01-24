@@ -9,6 +9,7 @@ import IncomingScreen from '../components/top_navigator/IncomingScreen';
 import OutgoingScreen from '../components/top_navigator/OutgoingScreen';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Colors from '../constants/Colors';
+import Layout from '../constants/Layout';
 const Tab = createMaterialTopTabNavigator();
 
 
@@ -32,7 +33,7 @@ export default function TopTabNavigator(props) {
           
           tabBarItemStyle:styles.tabBarCard,
           tabBarContentContainerStyle:styles.content,
-          tabBarActiveTintColor:Colors.new_color_palette.brown,          
+          tabBarActiveTintColor:Colors.new_color_palette.brown,                   
           tabBarLabelStyle:styles.label, 
           tabBarIcon: ()=><Icon name="file-download" size={20} color={Colors.new_color_palette.orange}/>,
       }}
@@ -68,6 +69,10 @@ const styles = StyleSheet.create({
 tabBarCard:{
     borderRadius:20,
     fontWeight:'bold',    
+
+    marginRight:20,
+    left:(Layout.window.width / 100 ) * 2,
+    backgroundColor:'#EEEEEE'
     
 },
 content:{
@@ -81,7 +86,7 @@ label:{
 },
 screen:{
     elevation:0,    
-    bottom:10
+    marginBottom:20
 }
 
 });
