@@ -92,7 +92,7 @@ export default class ReceiveScreen extends Component {
       okButtonStyle: styles.confirmButton,
       okButtonTextStyle: styles.confirmButtonText,
       callback: () => {
-        Popup.hide();
+      
         this.setState({isAppLoading: true});
         NetInfo.fetch().then(async response => {
           let data = {
@@ -114,7 +114,7 @@ export default class ReceiveScreen extends Component {
               )
               .then(async response => {
         
-                console.warn(response.data['doc_info']);
+                console.warn(response.data);
              
 
                 if (response.data['Message'] == 'true') {
@@ -158,7 +158,7 @@ export default class ReceiveScreen extends Component {
                 }
               })
               .catch(err => {
-                console.warn(err);
+                console.warn(err.response);
                 this.setState({isAppLoading: false});
                 Popup.hide();
               });

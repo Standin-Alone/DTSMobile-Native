@@ -7,7 +7,7 @@ import SocketConnection from '../../constants/SocketConnection';
 import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Popup} from 'react-native-popup-confirm-toast';
+import { Root, Popup } from 'react-native-popup-confirm-toast';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import * as ipConfig from '../../ipconfig';
@@ -121,6 +121,16 @@ export default class ReviewReleaseScreen extends Component {
           this.setState({isAppLoading: true});
        
           NetInfo.fetch().then(async response => {
+
+            Toast.show({
+              title: 'Message!',
+              text: 'Processing...',
+              color: '#702c91',
+              timeColor: '#440f5f',
+              timing: 5000,
+              icon: <Icon name={'check'} color={'#fff'} size={31}/>,
+              position: 'bottom',
+          })
             // Initialize Form Data
             let fd = new FormData();
             let division = await AsyncStorage.getItem('division');
