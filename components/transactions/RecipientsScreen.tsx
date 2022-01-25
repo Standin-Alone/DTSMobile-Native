@@ -168,7 +168,7 @@ export default class RecipientsScreen extends Component {
 
     
     this.setState({isAppLoading: true});
-    
+    // check if the action is not set action and return to se  nder
     if(this.state.selected_action != 'Set Action' || this.state.selected_action == 'Return to Sender' ){
 
 
@@ -198,12 +198,14 @@ export default class RecipientsScreen extends Component {
           },              
         })
       }else{
+
         this.props.navigation.push('ReviewRelease', {
           document_info: this.state.params.document_info,
           base64_files: this.state.params.base64_files,
           selectedRecipients: defaultRecipients.concat(selectedRecipients),
           action: this.state.selected_action
         });
+
       }
       
       

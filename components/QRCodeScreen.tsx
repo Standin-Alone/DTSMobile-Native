@@ -51,7 +51,7 @@ export default class QRCodeScreen extends Component{
       NetInfo.fetch().then( (response)=>{
         if(response.isConnected){
           axios.post(ipConfig.ipAddress+'MobileApp/Mobile/get_scanned_document',payload).then((response)=>{
-            console.warn(response.data['Message'] )
+            console.warn(response.data )
             this.setState({isBarcodeRead:false});
             if(response.data['Message'] == 'true'){
 

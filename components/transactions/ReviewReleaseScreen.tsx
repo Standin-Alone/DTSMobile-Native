@@ -7,7 +7,7 @@ import SocketConnection from '../../constants/SocketConnection';
 import Button from 'apsl-react-native-button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Root, Popup } from 'react-native-popup-confirm-toast';
+import { Root, Popup,Toast } from 'react-native-popup-confirm-toast';
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import * as ipConfig from '../../ipconfig';
@@ -191,18 +191,20 @@ export default class ReviewReleaseScreen extends Component {
                 .then(response => {
                   console.warn(response)
                   this.setState({isAppLoading: false});
+                  Toast.hide();
                   // check if status code is 200
                   if(response.status == 200){
                     console.warn(response.data['Message']);
                     if (response.data['Message'] == 'true') {
                       console.warn( this.state.params.selectedRecipients)
-                      // this.state.params.selectedRecipients.map(item =>
-                      //   SocketConnection.socket.emit('push notification', {
-                      //     channel:item,
-                      //       // response.data['doc_info'][0].sender_office_code,
-                      //     message: division + ' sucessfully release the document',
-                      //   }),
-                      // );
+
+
+                      this.state.params.selectedRecipients.map(item =>
+                        SocketConnection.socket.emit('push notification', {
+                          channel:item,
+                          message: division + ' sucessfully release the document',
+                        }),
+                      );
 
                    
                       Popup.show({

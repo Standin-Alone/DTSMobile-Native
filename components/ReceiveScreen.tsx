@@ -116,6 +116,9 @@ export default class ReceiveScreen extends Component {
         
                 console.warn(response.data);
              
+                
+
+
 
                 if (response.data['Message'] == 'true') {
                     
@@ -123,7 +126,7 @@ export default class ReceiveScreen extends Component {
                  SocketConnection.socket.emit('push notification', {
                    channel: this.state.params.document_info[0].sender_office_code,
                    message:
-                     data.info_division + ' sucessfully received the document',
+                     data.info_division + ' sucessfully received the document with a subject of "'+this.state.params.document_info[0].subject+'"',
                  });
 
                   Popup.show({
