@@ -56,7 +56,7 @@ export default class IncomingScreen extends Component {
             }
           })
           .catch(error => {
-            console.warn(error);
+            console.warn(error.response.data);
             this.setState({refreshing: false});
           });
       }
@@ -164,9 +164,11 @@ export default class IncomingScreen extends Component {
       </Card.Content>
     </Card>
   </Animatable.View> 
-    :<View style={styles.empty}>
-    <Text style={styles.emptyText}>You have no incoming documents.</Text>
-  </View>
+    :
+            null
+  //   <View style={styles.empty}>
+  //   <Text style={styles.emptyText}>You have no incoming documents.</Text>
+  // </View>
             
   
   );
@@ -324,6 +326,7 @@ const styles = StyleSheet.create({
   },
   empty: {
     top: 40,
+    
     left: (Layout.window.height / 100) * 1,
   },
   emptyText: {

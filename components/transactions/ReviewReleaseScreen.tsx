@@ -117,20 +117,22 @@ export default class ReviewReleaseScreen extends Component {
         okButtonStyle: styles.confirmButton,
         okButtonTextStyle: styles.confirmButtonText,
         callback: () => {
-          
+          Popup.hide();
           this.setState({isAppLoading: true});
-       
+            
+          setTimeout(()=>{
+
           NetInfo.fetch().then(async response => {
 
-            Toast.show({
-              title: 'Message!',
-              text: 'Processing...',
-              color: '#702c91',
-              timeColor: '#440f5f',
-              timing: 5000,
-              icon: <Icon name={'check'} color={'#fff'} size={31}/>,
-              position: 'bottom',
-          })
+          //   Toast.show({
+          //     title: 'Message!',
+          //     text: 'Processing...',
+          //     color: '#702c91',
+          //     timeColor: '#440f5f',
+          //     timing: 5000,
+          //     icon: <Icon name={'check'} color={'#fff'} size={31}/>,
+          //     position: 'bottom',
+          // })
             // Initialize Form Data
             let fd = new FormData();
             let division = await AsyncStorage.getItem('division');
@@ -201,8 +203,9 @@ export default class ReviewReleaseScreen extends Component {
 
                       this.state.params.selectedRecipients.map(item =>
                         SocketConnection.socket.emit('push notification', {
-                          channel:item,
-                          message: division + ' sucessfully release the document',
+                          channel:[item],
+                          message: 'You have incoming document from '+division,
+                          document_number:  this.state.params.document_info[0].document_number
                         }),
                       );
 
@@ -294,6 +297,9 @@ export default class ReviewReleaseScreen extends Component {
               });
             }
           });
+
+          
+        },3000);
         },
 
         modalContainerStyle: styles.confirmModal,

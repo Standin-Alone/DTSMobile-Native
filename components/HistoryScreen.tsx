@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable, RefreshControl} from 'react-native';
+import {StyleSheet, Text, View, Pressable, RefreshControl,FlatList} from 'react-native';
 
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
@@ -21,6 +21,7 @@ export default class HistoryScreen extends Component {
       isLoading: false,
       refreshing: false,
       history: [],
+      released_to:[],
       params: this.props.route.params,
       historyOptions: {
         headerTitle: 'Document History',
@@ -42,7 +43,7 @@ export default class HistoryScreen extends Component {
         ipConfig.ipAddress + 'MobileApp/Mobile/get_history/' + document_number,
       )
       .then(response => {
-        this.setState({history: response.data['history'], refreshing: false});
+        this.setState({history: response.data['history'],released_to: response.data['released_to'], refreshing: false});
       })
       .catch(error => {
         console.warn(error.response.data);
@@ -119,9 +120,47 @@ export default class HistoryScreen extends Component {
             color={Colors.color_palette.orange}
           />{' '}
           {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks} {'\n'}
-        </Text>
+        </Text>    
+
         : null
         }
+
+        {rowData.type == 'Released' ? 
+        
+      (
+        <View>
+            <Text
+            style={[
+              [
+                styles.cardHeader,
+                {
+                  backgroundColor: 'white',
+                  alignSelf: 'flex-start',
+                  padding: 10,
+                  borderRadius: 20,
+                  color:
+                    rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger ,
+                  borderColor:
+                    rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger,
+                  borderWidth: 1,
+                  marginBottom: 20,
+                },
+              ],
+            ]}>
+
+            {' '}         
+            {rowData.type == 'Released' ?  'To the following:'  : 'Not Authorize to Receive'}
+
+          </Text>        
+
+          <FlatList
+              data={this.state.released_to}
+            renderItem={({item,index}) => <Text style={styles.released_to_style}>{index+1}. {item.INFO_DIVISION}</Text>}
+          />
+        </View>
+      ): null}
+       
+
       </View>
     );
   };
@@ -141,7 +180,90 @@ export default class HistoryScreen extends Component {
                            
                 
             />
-                            
+            <Card.Content>
+            <View style={{flexDirection:"row"}}>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}}>Document Type:</Text>
+                    </View>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-end',right:60}}> {this.state.params.document_info[0].type}</Text>
+                    </View>
+                </View>
+
+                <View style={{flexDirection:"row"}}>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Origin Type: </Text>
+                    </View>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].origin_type}  </Text>
+                    </View>
+                </View>
+
+                {/* if the origin type is external */}
+                {this.state.params.document_info[0].origin_type == 'External' && (
+
+                  <View>
+                    <View style={{flexDirection:"row"}}>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Name: </Text>
+                      </View>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_name}  </Text>
+                      </View>
+                    </View>
+
+                    <View style={{flexDirection:"row"}}>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Name: </Text>
+                      </View>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_name}  </Text>
+                      </View>
+                    </View>
+
+                    <View style={{flexDirection:"row"}}>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Position: </Text>
+                      </View>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_position}  </Text>
+                      </View>
+                    </View>
+
+                    <View style={{flexDirection:"row"}}>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Address: </Text>
+                      </View>
+                      <View style={{flex:1}}>
+                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_address}  </Text>
+                      </View>
+                    </View>
+
+                  </View>
+
+                  
+
+
+
+                )
+                
+                
+                }
+
+
+                <View style={{flexDirection:"row"}}>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}}>Title:</Text>
+                    </View>
+                    <View style={{flex:1}}>
+                    <Text style={{justifyContent:'flex-end',right:60}} numberOfLines={100}>{this.state.params.document_info[0].subject} </Text>
+                    </View>
+                </View>
+                
+          
+
+             
+            </Card.Content>
           </Card>
         <View style={styles.innerContainer}>
           <Timeline
@@ -230,5 +352,9 @@ const styles = StyleSheet.create({
     color: Colors.new_color_palette.orange,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  released_to_style:{
+
+    fontSize:10
   }
 });

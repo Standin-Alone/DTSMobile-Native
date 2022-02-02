@@ -4,4 +4,4 @@
 //export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; //https:/172.16.200.41/dts/ //DEV SERVER IP
 //export  const ipAddress = 'http://172.17.150.112/dts-web/'; //IP SA OFFICE (ICT)
 
- export  const ipAddress = 'http://192.168.1.8/dts-web/';
+  export  const ipAddress = 'http://172.17.211.9/dts-web/';

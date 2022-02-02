@@ -33,10 +33,71 @@ import io from "socket.io-client";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SocketConnection from '../constants/SocketConnection';
 import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+
+
 
 const Stack = createStackNavigator();
 
 function MyStack() {
+
+  const navigation = useNavigation();
+  
+PushNotification.configure({
+  onNotification: function(notification) {
+      const { data } = notification;
+ 
+
+      navigation.navigate('History',{document_info:[{document_number :data.document_number}]})
+      
+    
+
+  }
+});
+
+
+
+SocketConnection.socket.on('connect', msg => {  
+      
+  SocketConnection.socket.on('get notification', async message => {
+    let user_id = await AsyncStorage.getItem('user_id');
+    let office_code = await AsyncStorage.getItem('office_code');
+    if (message.channel.includes(office_code) ) {        
+
+
+      message.channel.map(channel_item=>{
+
+           // create channel for notification
+      PushNotification.createChannel({
+        channelId: channel_item,
+        channelName: channel_item,
+        soundName: 'default',     
+        vibrate: true,
+      });
+
+      // create channel for notification
+      PushNotification.localNotification({
+        channelId: channel_item, // (required)
+        channelName: channel_item,
+        autoCancel: true,
+        userInfo: {document_number:message.document_number},
+        subText: 'Notification',
+        title: 'Document Tracking System',
+        message: message.message,
+        vibrate: true,
+        vibration: 300,
+        playSound: true,
+        soundName: 'default',
+      });
+
+
+      })
+   
+    }
+  });
+});
+
   return (
     <Root>
       <Stack.Navigator initialRouteName="Authentication" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               

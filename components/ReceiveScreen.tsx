@@ -92,8 +92,10 @@ export default class ReceiveScreen extends Component {
       okButtonStyle: styles.confirmButton,
       okButtonTextStyle: styles.confirmButtonText,
       callback: () => {
-      
+        Popup.hide();
         this.setState({isAppLoading: true});
+
+        setTimeout(()=>{
         NetInfo.fetch().then(async response => {
           let data = {
             document_number: this.state.params.document_info[0].document_number,
@@ -124,9 +126,10 @@ export default class ReceiveScreen extends Component {
                     
                   // push notification
                  SocketConnection.socket.emit('push notification', {
-                   channel: this.state.params.document_info[0].sender_office_code,
+                   channel: [this.state.params.document_info[0].sender_office_code],
                    message:
                      data.info_division + ' sucessfully received the document with a subject of "'+this.state.params.document_info[0].subject+'"',
+                     document_number: data.document_number
                  });
 
                   Popup.show({
@@ -181,6 +184,7 @@ export default class ReceiveScreen extends Component {
             });
           }
         });
+      },3000);
       },
     });
   };
@@ -207,15 +211,71 @@ export default class ReceiveScreen extends Component {
                   <Text style={styles.detailTitle}>Document Number:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  {/* <Text style={styles.detailValue}>DA-CO-IAS-MO20211025-00001</Text> */}
+                  
                   <Text style={styles.detailValue}>{item.document_number}</Text>
                 </View>
+
+                <View>
+                  <Text style={styles.detailTitle}>Document Type:</Text>
+                </View>
+
+                <View style={styles.titleView}>
+                  <Text style={styles.titleValue} numberOfLines={10}>
+                    {item.document_type}               
+                  </Text>
+                </View>
+
+                <View>
+                  <Text style={styles.detailTitle}>Origin Type:</Text>
+                </View>
+
+                <View style={styles.titleView}>
+                  <Text style={styles.titleValue} numberOfLines={10}>
+                    {item.origin_type}               
+                  </Text>
+                </View>
+
+                {/* if the origin type is external */}
+                {item.origin_type == 'External' && (
+                  <View>
+                    <View>
+                      <Text style={styles.detailTitle}>Sender Name:</Text>
+                    </View>
+
+                    <View style={styles.titleView}>
+                      <Text style={styles.titleValue} numberOfLines={10}>
+                        {item.sender_name}               
+                      </Text>
+                    </View>
+
+                    <View>
+                      <Text style={styles.detailTitle}>Sender Position:</Text>
+                    </View>
+
+                    <View style={styles.titleView}>
+                      <Text style={styles.titleValue} numberOfLines={10}>
+                        {item.sender_position}               
+                      </Text>
+                    </View>
+
+                    <View>
+                      <Text style={styles.detailTitle}>Sender Address:</Text>
+                    </View>
+
+                    <View style={styles.titleView}>
+                      <Text style={styles.titleValue} numberOfLines={10}>
+                        {item.sender_address}               
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
 
                 <View>
                   <Text style={styles.detailTitle}>Title:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  {/* <Text style={styles.titleValue}>RFFA-IMC-On-Boarding-File-Structure </Text> */}
+                  
                   <Text style={styles.titleValue}>{item.subject} </Text>
                 </View>
 
@@ -235,7 +295,7 @@ export default class ReceiveScreen extends Component {
                   <Text style={styles.detailTitle}>From:</Text>
                 </View>
                 <View style={styles.titleView}>
-                  {/* <Text style={styles.titleValue}>ICTS SysAdd</Text> */}
+              
                   <Text style={styles.titleValue}>
                     {item.sender_division}
                     {'\n'}
@@ -306,7 +366,7 @@ const styles = StyleSheet.create({
     color: Colors.new_color_palette.orange,
   },
   detailValue: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: Colors.new_color_palette.orange,
     left: 20,
@@ -329,6 +389,7 @@ const styles = StyleSheet.create({
   },
   titleView: {
     width: (Layout.window.width / 100) * 30,
+    fontSize: 18,
   },
   infoCard: {
     top: 20,

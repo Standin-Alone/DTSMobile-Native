@@ -117,7 +117,7 @@ export default class HomeScreen extends Component {
             placeholderStyle={{color: Colors.new_color_palette.title, left: 25}}
             labelField="type"
             valueField="type_id"
-            placeholder="Select Type of Document"
+            placeholder="Filter by type of document"
             searchPlaceholder="Search..."
             onChange={item => this.setState({selectedDocType: item})}
             renderLeftIcon={() => (
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
 
   searchTextInput: {
-    borderRadius: 40,
+    borderRadius: 10,
     width: (Layout.window.width / 100) * 90,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -210,8 +210,8 @@ const styles = StyleSheet.create({
   },
   dropDown: {
     borderWidth: 1,
-    borderRadius: 15,
-    top: (Layout.window.height / 100) * 15,
+    borderRadius: 10,
+    top: (Layout.window.height / 100) * 1,
     flexGrow: 0,
     zIndex: 1,
     left: 20,

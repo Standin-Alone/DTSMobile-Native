@@ -22,7 +22,7 @@ export default function TopTabNavigator(props) {
   return (
     
     <Tab.Navigator screenOptions={{tabBarStyle:styles.screen }}  
-    
+    style={{top:(Layout.window.height / 100) * 2}}
   
     >
       
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 tabBarCard:{
     borderRadius:20,
     fontWeight:'bold',    
-
+  
     marginRight:20,
     left:(Layout.window.width / 100 ) * 2,
     backgroundColor:'#EEEEEE'
