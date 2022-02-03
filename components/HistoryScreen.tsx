@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Pressable, RefreshControl,FlatList} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  RefreshControl,
+  FlatList,
+} from 'react-native';
 
 import Layout from '../constants/Layout';
 import Colors from '../constants/Colors';
@@ -8,7 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Timeline from 'react-native-timeline-flatlist';
 import NetInfo from '@react-native-community/netinfo';
-
+import Spinner from 'react-native-spinkit';
 import axios from 'axios';
 import * as ipConfig from '../ipconfig';
 import {Card} from 'react-native-paper';
@@ -21,8 +28,9 @@ export default class HistoryScreen extends Component {
       isLoading: false,
       refreshing: false,
       history: [],
-      released_to:[],
+      released_to: [],
       params: this.props.route.params,
+      document_info: [],
       historyOptions: {
         headerTitle: 'Document History',
         headerTransparent: true,
@@ -31,11 +39,11 @@ export default class HistoryScreen extends Component {
       },
     };
 
-    console.warn(this.props.route.params)
+    console.warn(this.props.route.params);
   }
 
   get_history = () => {
-    this.setState({history:[]});
+    this.setState({history: []});
     let document_number = this.state.params.document_info[0].document_number;
 
     axios
@@ -43,7 +51,13 @@ export default class HistoryScreen extends Component {
         ipConfig.ipAddress + 'MobileApp/Mobile/get_history/' + document_number,
       )
       .then(response => {
-        this.setState({history: response.data['history'],released_to: response.data['released_to'], refreshing: false});
+        console.warn(response.data['document_info']);
+        this.setState({
+          history: response.data['history'],
+          released_to: response.data['released_to'],
+          document_info: response.data['document_info'],
+          refreshing: false,
+        });
       })
       .catch(error => {
         console.warn(error.response.data);
@@ -62,7 +76,7 @@ export default class HistoryScreen extends Component {
   renderFooter = () => {};
 
   render_timeline = (rowData, index) => {
-    
+    let get_current_index = index + 1;
     return (
       <View style={{flex: 1}}>
         <Text
@@ -75,22 +89,43 @@ export default class HistoryScreen extends Component {
                 padding: 10,
                 borderRadius: 20,
                 color:
-                  rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger ,
+                  rowData.type == 'Released'
+                    ? Colors.primary
+                    : rowData.rcl_status == 1
+                    ? Colors.green
+                    : Colors.danger,
                 borderColor:
-                  rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger,
+                  rowData.type == 'Released'
+                    ? Colors.primary
+                    : rowData.rcl_status == 1
+                    ? Colors.green
+                    : Colors.danger,
                 borderWidth: 1,
                 marginBottom: 20,
               },
             ],
           ]}>
-
           {' '}
           <Icon
-            name={rowData.type == 'Released' ? 'envelope-open-o' :  rowData.rcl_status == 1 ? 'check-circle-o' : 'exclamation-triangle'}
+            name={
+              rowData.type == 'Released'
+                ? 'envelope-open-o'
+                : rowData.rcl_status == 1
+                ? 'check-circle-o'
+                : 'exclamation-triangle'
+            }
             size={10}
-            color={rowData.type == 'Released' ? Colors.primary : rowData.rcl_status == 1 ? Colors.green : Colors.danger}
+            color={
+              rowData.type == 'Released'
+                ? Colors.primary
+                : rowData.rcl_status == 1
+                ? Colors.green
+                : Colors.danger
+            }
           />{' '}
-          {rowData.rcl_status == 1 ? rowData.type + ' By'  : 'Not Authorize to Receive'}
+          {rowData.rcl_status == 1
+            ? rowData.type + ' By'
+            : 'Not Authorize to Receive'}
         </Text>
         <Text style={[styles.cardHeader]}>
           {' '}
@@ -101,7 +136,7 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.transacting_user_fullname} {'\n'}
         </Text>
-        <Text style={styles.cardHeader}>
+        <Text style={[styles.cardHeader]}>
           {' '}
           <Icon
             name="building"
@@ -110,26 +145,47 @@ export default class HistoryScreen extends Component {
           />{' '}
           {rowData.INFO_SERVICE} {'\n'} {rowData.INFO_DIVISION} {'\n'}
         </Text>
-        {rowData.type == 'Released'  ?
-        <Text style={styles.cardHeader}>
-          {' '}
-          
-          <Icon
-            name="wechat"
-            size={10}
-            color={Colors.color_palette.orange}
-          />{' '}
-          {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks} {'\n'}
-        </Text>    
+        {rowData.type == 'Released' ? (
+          <Text style={styles.cardHeader}>
+            {' '}
+            <Icon
+              name="wechat"
+              size={10}
+              color={Colors.color_palette.orange}
+            />{' '}
+            {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks}  {'\n'}
+          </Text>
+        ) : null}
 
-        : null
-        }
+        {/* show processing display when document current status is receive */}
+        {rowData.type == 'Received' && (index+1) == get_current_index ? (
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 1}}>
+              <Spinner
+                isVisible={true}
+                size={16}
+                type={'ChasingDots'}
+                color={Colors.primary}
+                style={{justifyContent: 'flex-start'}}
+              />
+            </View>
 
-        {rowData.type == 'Released' ? 
-        
-      (
-        <View>
-            <Text
+            <View style={{flex: 1}}>
+              <Text
+                style={[
+                  [
+                    styles.cardHeader,
+                    {justifyContent: 'flex-end', right: 110, top: 2},
+                  ],
+                ]}>
+                Processing
+              </Text>
+            </View>
+          </View>
+        ) :null }
+        {rowData.type == 'Released' ? (
+          <View>
+            {/* <Text
             style={[
               [
                 styles.cardHeader,
@@ -151,16 +207,15 @@ export default class HistoryScreen extends Component {
             {' '}         
             {rowData.type == 'Released' ?  'To the following:'  : 'Not Authorize to Receive'}
 
-          </Text>        
+          </Text>         */}
 
-          <FlatList
+            {/*  list of next recipients */}
+            {/* <FlatList
               data={this.state.released_to}
             renderItem={({item,index}) => <Text style={styles.released_to_style}>{index+1}. {item.INFO_DIVISION}</Text>}
-          />
-        </View>
-      ): null}
-       
-
+          /> */}
+          </View>
+        ) : null}
       </View>
     );
   };
@@ -169,102 +224,154 @@ export default class HistoryScreen extends Component {
     // design start here
     return (
       <View style={styles.container}>
+        <Card
+          style={{
+            width: (Layout.window.width / 100) * 95,
+            marginTop: (Layout.window.height / 100) * 5,
+            backgroundColor: Colors.light,
+          }}
+          elevation={2}>
+          <Card.Title
+            title={'Document Number:'}
+            titleStyle={styles.title}
+            subtitle={this.state.params.document_info[0].document_number}
+            subtitleStyle={styles.subtitle}
+            subtitleNumberOfLines={10}
+          />
+          <Card.Content>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    justifyContent: 'flex-start',
+                    fontFamily: 'Gotham_bold',
+                  }}>
+                  Document Type:
+                </Text>
+              </View>
+              <View style={{flex: 1}}>
+                <Text style={{justifyContent: 'flex-end', right: 60}}>
+                  {' '}
+                  {this.state.document_info.type}
+                </Text>
+              </View>
+            </View>
 
-      <Card style={{width:(Layout.window.width / 100) * 95,marginTop:(Layout.window.height / 100) * 5,backgroundColor:Colors.light}} elevation={2}>
-            <Card.Title           
-                title= {'Document Number:'}
-                titleStyle = {styles.title}
-                subtitle={this.state.params.document_info[0].document_number}
-                subtitleStyle={styles.subtitle}
-                subtitleNumberOfLines={10}     
-                           
-                
-            />
-            <Card.Content>
-            <View style={{flexDirection:"row"}}>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}}>Document Type:</Text>
-                    </View>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-end',right:60}}> {this.state.params.document_info[0].type}</Text>
-                    </View>
-                </View>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    justifyContent: 'flex-start',
+                    fontFamily: 'Gotham_bold',
+                  }}
+                  numberOfLines={2}>
+                  Origin Type:{' '}
+                </Text>
+              </View>
+              <View style={{flex: 1}}>
+                <Text style={{justifyContent: 'flex-end', right: 60}}>
+                  {this.state.document_info.origin_type}{' '}
+                </Text>
+              </View>
+            </View>
 
-                <View style={{flexDirection:"row"}}>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Origin Type: </Text>
-                    </View>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].origin_type}  </Text>
-                    </View>
-                </View>
-
-                {/* if the origin type is external */}
-                {this.state.params.document_info[0].origin_type == 'External' && (
-
-                  <View>
-                    <View style={{flexDirection:"row"}}>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Name: </Text>
-                      </View>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_name}  </Text>
-                      </View>
-                    </View>
-
-                    <View style={{flexDirection:"row"}}>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Name: </Text>
-                      </View>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_name}  </Text>
-                      </View>
-                    </View>
-
-                    <View style={{flexDirection:"row"}}>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Position: </Text>
-                      </View>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_position}  </Text>
-                      </View>
-                    </View>
-
-                    <View style={{flexDirection:"row"}}>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}} numberOfLines={2}>Sender Address: </Text>
-                      </View>
-                      <View style={{flex:1}}>
-                      <Text style={{justifyContent:'flex-end',right:60}}>{this.state.params.document_info[0].sender_address}  </Text>
-                      </View>
-                    </View>
-
+            {/* if the origin type is external */}
+            {this.state.params.document_info[0].origin_type == 'External' && (
+              <View>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={{
+                        justifyContent: 'flex-start',
+                        fontFamily: 'Gotham_bold',
+                      }}
+                      numberOfLines={2}>
+                      Sender Name:{' '}
+                    </Text>
                   </View>
-
-                  
-
-
-
-                )
-                
-                
-                }
-
-
-                <View style={{flexDirection:"row"}}>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-start',fontFamily:'Gotham_bold'}}>Title:</Text>
-                    </View>
-                    <View style={{flex:1}}>
-                    <Text style={{justifyContent:'flex-end',right:60}} numberOfLines={100}>{this.state.params.document_info[0].subject} </Text>
-                    </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                      {this.state.document_info.sender_name}{' '}
+                    </Text>
+                  </View>
                 </View>
-                
-          
 
-             
-            </Card.Content>
-          </Card>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={{
+                        justifyContent: 'flex-start',
+                        fontFamily: 'Gotham_bold',
+                      }}
+                      numberOfLines={2}>
+                      Sender Name:{' '}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                      {this.state.document_info.sender_name}{' '}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={{
+                        justifyContent: 'flex-start',
+                        fontFamily: 'Gotham_bold',
+                      }}
+                      numberOfLines={2}>
+                      Sender Position:{' '}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                      {this.state.document_info.sender_position}{' '}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={{
+                        justifyContent: 'flex-start',
+                        fontFamily: 'Gotham_bold',
+                      }}
+                      numberOfLines={2}>
+                      Sender Address:{' '}
+                    </Text>
+                  </View>
+                  <View style={{flex: 1}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                      {this.state.document_info.sender_address}{' '}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            <View style={{flexDirection: 'row'}}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    justifyContent: 'flex-start',
+                    fontFamily: 'Gotham_bold',
+                  }}>
+                  Title:
+                </Text>
+              </View>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{justifyContent: 'flex-end', right: 60}}
+                  numberOfLines={100}>
+                  {this.state.document_info.subject}{' '}
+                </Text>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
         <View style={styles.innerContainer}>
           <Timeline
             data={this.state.history}
@@ -343,18 +450,17 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 13,
   },
-  title: {    
+  title: {
     color: '#050A0D',
     fontSize: 12,
     fontWeight: 'bold',
   },
-  subtitle: {    
+  subtitle: {
     color: Colors.new_color_palette.orange,
     fontSize: 16,
     fontWeight: 'bold',
   },
-  released_to_style:{
-
-    fontSize:10
-  }
+  released_to_style: {
+    fontSize: 10,
+  },
 });

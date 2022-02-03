@@ -10,8 +10,8 @@ import * as ipConfig from '../ipconfig';
 import * as Yup from 'yup';
 import NetInfo from "@react-native-community/netinfo";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Animatable from 'react-native-animatable';
 
-import { useNavigation } from '@react-navigation/native'
 
 // constants
 import Layout from '../constants/Layout';
@@ -83,9 +83,15 @@ export default class LoginScreen extends Component {
 
 
       <View style={styles.container}>
-             
-      <Image source={Images.splash_screen_logo} style={styles.logo} resizeMode={'contain'} />        
-       
+      
+      
+      <Animatable.Image source={Images.login_bg} style={styles.logo}  resizeMode={'contain'} animation="fadeInDownBig" delay={500}/>  
+
+      <Animatable.View style={styles.title_container} animation="fadeInDownBig" >
+                <Text style={styles.title} numberOfLines={2}> Welcome to </Text>
+                <Text style={styles.title} numberOfLines={2}> Document Tracking System</Text>           
+      </Animatable.View>  
+
         <View style={styles.login_form}>
           <Formik
             initialValues = {{username:'',password:''}}
@@ -169,16 +175,28 @@ const styles = StyleSheet.create({
         backgroundColor:Colors.new_color_palette.second_background,
         minHeight: Math.round(Layout.window.height)
       },
-      title: {
-        marginVertical: (Layout.window.height / 100) * 20,
-        fontSize: 24,
-        fontWeight: 'bold',
+      title_container:{        
+        alignContent:'flex-start',
+        left:(Layout.window.width / 100) *  3,
+        alignSelf:'flex-start'
+      },
+      title:{
+        top: (Layout.window.height / 100) * 1,   
+        color:Colors.dark,             
+        fontFamily:'GothamBold',         
+        fontSize:25,    
       },
       login_form:{      
-        marginVertical: (Layout.window.height / 100) * 1  },
+        marginVertical: (Layout.window.height / 100) * 1,
+        top: (Layout.window.height / 100) * 5,
+      
+      },
       logo:{
-          width:300,
-          height:300,            
+        width:(Layout.window.width / 100) *  60,
+        height:(Layout.window.height / 100) * 60,
+        alignSelf:'center',
+        top: (Layout.window.height / 100) * -10,   
+        position:'absolute'               
       },
       link: {
         marginTop: 15,
