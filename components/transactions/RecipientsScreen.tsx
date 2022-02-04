@@ -28,7 +28,7 @@ export default class RecipientsScreen extends Component {
     super(props);
     console.warn(this.props.route.params);
     this.state = {
-      scanned: false,
+      offices_loading: true,
       selected_action:'Set Action',
       recipients: [],
       selectedRecipients: [],
@@ -124,35 +124,42 @@ export default class RecipientsScreen extends Component {
     };
   }
 
+
+get_offices = async()=>{
+
+  let document_number = this.state.params.document_info[0].document_number;
+  let my_office_code = await AsyncStorage.getItem('office_code');
+  axios
+    .get(
+      ipConfig.ipAddress +
+        'MobileApp/Mobile/get_offices/' +
+        document_number +
+        '/' +
+        my_office_code,
+    )
+    .then(response => {
+      
+      this.setState({isAppLoading: false,offices_loading:false});
+
+      let clean_office = response.data['offices'].filter((item)=>item.children.length != 0)
+      console.log(response.data['default_recipients_info']);
+      this.setState({recipients: clean_office});
+      this.setState({
+        defaultRecipients: response.data['default_recipients'],
+        default_recipients_info: response.data['default_recipients_info'],            
+      });
+            
+      
+    }).catch(err=>{this.setState({isAppLoading: false})
+    console.warn(err.response.data)
+  });
+
+  }
  async componentDidMount() {
 
     this.setState({isAppLoading:true});
     this.props.navigation.addListener('focus', async () => {
-      let document_number = this.state.params.document_info[0].document_number;
-      let my_office_code = await AsyncStorage.getItem('office_code');
-      axios
-        .get(
-          ipConfig.ipAddress +
-            'MobileApp/Mobile/get_offices/' +
-            document_number +
-            '/' +
-            my_office_code,
-        )
-        .then(response => {
-          console.warn(response.data['default_recipients'])
-          this.setState({isAppLoading: false});
-
-          let clean_office = response.data['offices'].filter((item)=>item.children.length != 0)
-          this.setState({recipients: clean_office});
-          this.setState({
-            defaultRecipients: response.data['default_recipients'],
-            default_recipients_info: response.data['default_recipients_info'],            
-          });
-                
-          
-        }).catch(err=>{this.setState({isAppLoading: false})
-        console.warn(err.response.data)
-      });
+      this.get_offices();
 
       
     });
@@ -161,11 +168,19 @@ export default class RecipientsScreen extends Component {
     this.setState({isAppLoading: false});
   }
 
+  emptyComponent = () => (
+    <View style={styles.empty}>
+      <Text style={styles.emptyText}>No other recipients.</Text>
+    </View>
+  );
+
+
+
   // handle  go to review release screen
   handleGoToReviewReleaseScreen = async () => {
     let selectedRecipients = this.state.selectedRecipients;
     let defaultRecipients = this.state.defaultRecipients;
-
+    console.warn(this.state.params.base64_files);
     
     this.setState({isAppLoading: true});
     // check if the action is not set action and return to se  nder
@@ -295,9 +310,14 @@ export default class RecipientsScreen extends Component {
             
           <ScrollView style={styles.recipient_office_select} showsVerticalScrollIndicator>
             <ModalSelector
+            
               data={this.state.actions}
               onChange={option => {
                 console.warn(option.label);
+                if(this.state.recipients.length == 0){
+                  this.get_offices()
+                }                
+
                 if(option.label != 'Return to Sender'){
                   this.refs.multiSelect._toggleSelector();
                 }else{
@@ -324,6 +344,7 @@ export default class RecipientsScreen extends Component {
          
         
             <SectionedMultiSelect
+              loading={this.state.offices_loading}
               ref="multiSelect"
               searchPlaceholderText="Search by Office or Division"
               items={this.state.recipients}
@@ -367,13 +388,14 @@ export default class RecipientsScreen extends Component {
                     name="info-circle"
                     size={18}
                     color={Colors.color_palette.orange}
-                  /> Default Recipients
+                  /> Other Recipients
         </Text>
         
         <FlatList
           horizontal
-          scrollEnabled
+          
           data={this.state.default_recipients_info}
+          ListEmptyComponent={()=>this.emptyComponent()}
           renderItem={({item})=>(
             <Card style={styles.default_recipients_list}>
               <Card.Title title={item.info_division}  titleStyle={styles.info_service} 
@@ -525,14 +547,32 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     fontSize:18,
   },
+  empty: {
+    
+    backgroundColor:'white',
+    width:(Layout.window.width / 100) * 90,
+    padding:20,
+    borderRadius:20,
+    left: (Layout.window.height / 100) * 1,
+  },
+  emptyText: {
+    color: Colors.new_color_palette.text,
+    fontSize: 23,
+    fontWeight: 'bold',
+  },
   default_recipients_list:{    
-    top: (Layout.window.height / 100) * 23,
+    left:10,
+    marginRight:20,
     width: (Layout.window.width / 100) * 92,
     height:(Layout.window.height / 100) *10,    
   },
   flatListContainer: {
     flexGrow: 0,
+    top: (Layout.window.height / 100) * 23,
     paddingBottom: (Layout.window.height / 100) * 35,
+    paddingRight: (Layout.window.height / 100) * 15,
+    paddingTop:20,
+        
   },
   info_service:{
     fontWeight:'bold',

@@ -28,7 +28,7 @@ import DocumentPicker from 'react-native-document-picker';
 export default class AttachmentScreen extends Component {
   constructor(props) {
     super(props);
-    console.warn(this.props.route.params);
+    
     this.state = {
       scanned: false,
       base64_files: [],    
@@ -95,7 +95,7 @@ export default class AttachmentScreen extends Component {
 
   // handle receive button
   handleGoToRecipients = async () => {
-
+    
     this.setState({isAppLoading:true});
     this.props.navigation.push('Recipients',{
       document_info: this.state.params.document_info,
@@ -229,7 +229,11 @@ export default class AttachmentScreen extends Component {
       let remove = array.splice(get_index, 1);
 
       this.setState({
-        base64_files: array.map(item => ({uri: item.uri, name: item.name})),
+        base64_files: array.map(item => ({uri: item.uri, name: item.name,
+          base_name: item.base_name,
+          file_extension:item.file_extension,
+          path: item.uri,
+          type: item.type})),
       }).catch(err => {
         console.warn(err);
       });
