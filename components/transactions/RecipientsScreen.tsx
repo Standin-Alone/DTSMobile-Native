@@ -180,7 +180,7 @@ get_offices = async()=>{
   handleGoToReviewReleaseScreen = async () => {
     let selectedRecipients = this.state.selectedRecipients;
     let defaultRecipients = this.state.defaultRecipients;
-    console.warn(this.state.params.base64_files);
+    
     
     this.setState({isAppLoading: true});
     // check if the action is not set action and return to se  nder
@@ -355,13 +355,11 @@ get_offices = async()=>{
               selectText="Select recipients..."
               showDropDowns={true}
               readOnlyHeadings={true}
-              onSelectedItemsChange={value => {
-                console.warn(value);
+              onSelectedItemsChange={value => {                
                 this.setState({selectedRecipients: value});
               }}
               showRemoveAll={true}
-              filterItems={searchTerm => {
-                console.warn(this.state.recipients);
+              filterItems={searchTerm => {                
                 const filteredRecipients = this.state.recipients.filter(
                   (item, index) =>
                     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
