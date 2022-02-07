@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         top: (Layout.window.height / 100) * 1,   
         color:Colors.dark,             
         fontFamily:'GothamBold',         
-        fontSize:25,    
+        fontSize:20,    
       },
       login_form:{      
         marginVertical: (Layout.window.height / 100) * 1,
@@ -192,10 +192,10 @@ const styles = StyleSheet.create({
       
       },
       logo:{
-        width:(Layout.window.width / 100) *  60,
-        height:(Layout.window.height / 100) * 60,
+        width:(Layout.window.width / 100) *  70,
+        height:(Layout.window.height / 100) * 70,
         alignSelf:'center',
-        top: (Layout.window.height / 100) * -10,   
+        top: (Layout.window.height / 100) * -15,   
         position:'absolute'               
       },
       link: {

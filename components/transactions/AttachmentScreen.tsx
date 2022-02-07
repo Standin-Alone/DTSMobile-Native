@@ -39,7 +39,7 @@ export default class AttachmentScreen extends Component {
       isAppLoading: false,
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       receiveFormOptions: {

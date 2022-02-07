@@ -153,12 +153,12 @@ export default class HistoryScreen extends Component {
               size={10}
               color={Colors.color_palette.orange}
             />{' '}
-            {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks}  {'\n'}
+            {rowData.rcl_remarks == null ? 'None' : rowData.rcl_remarks}  {'\n'} 
           </Text>
         ) : null}
 
         {/* show processing display when document current status is receive */}
-        {rowData.type == 'Received' && (index+1) == get_current_index ? (
+        {rowData.type == 'Received' && index == 0 && this.state.params.document_info[0].status != 'Archived' && rowData.rcl_status == 1 ? (
           <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1}}>
               <Spinner
@@ -175,10 +175,10 @@ export default class HistoryScreen extends Component {
                 style={[
                   [
                     styles.cardHeader,
-                    {justifyContent: 'flex-end', right: 110, top: 2},
+                    {justifyContent: 'flex-end', right: (Layout.window.width / 100) * 22, top: 2},
                   ],
                 ]}>
-                Processing
+                Processing 
               </Text>
             </View>
           </View>
@@ -232,13 +232,29 @@ export default class HistoryScreen extends Component {
           }}
           elevation={2}>
           <Card.Title
-            title={'Document Number:'}
+            title= {<Text>Document Number: </Text>}
+            right= {()=>
+              this.state.document_info.status == 'Archived' ?(
+            <Text style={styles.right}>  <Icon
+              name={
+                'check'
+              }
+              size={15}
+              color={
+               Colors.green
+              }
+            />
+                Completed
+            </Text> ): null }
+            
             titleStyle={styles.title}
             subtitle={this.state.params.document_info[0].document_number}
             subtitleStyle={styles.subtitle}
             subtitleNumberOfLines={10}
           />
           <Card.Content>
+
+            
             <View style={{flexDirection: 'row'}}>
               <View style={{flex: 1}}>
                 <Text
@@ -250,7 +266,7 @@ export default class HistoryScreen extends Component {
                 </Text>
               </View>
               <View style={{flex: 1}}>
-                <Text style={{justifyContent: 'flex-end', right: 60}}>
+                <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                   {' '}
                   {this.state.document_info.type}
                 </Text>
@@ -269,14 +285,14 @@ export default class HistoryScreen extends Component {
                 </Text>
               </View>
               <View style={{flex: 1}}>
-                <Text style={{justifyContent: 'flex-end', right: 60}}>
+                <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                   {this.state.document_info.origin_type}{' '}
                 </Text>
               </View>
             </View>
 
             {/* if the origin type is external */}
-            {this.state.params.document_info[0].origin_type == 'External' && (
+            {this.state.document_info.origin_type == 'External' && (
               <View>
                 <View style={{flexDirection: 'row'}}>
                   <View style={{flex: 1}}>
@@ -290,7 +306,7 @@ export default class HistoryScreen extends Component {
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
-                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                       {this.state.document_info.sender_name}{' '}
                     </Text>
                   </View>
@@ -308,7 +324,7 @@ export default class HistoryScreen extends Component {
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
-                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                       {this.state.document_info.sender_name}{' '}
                     </Text>
                   </View>
@@ -326,7 +342,7 @@ export default class HistoryScreen extends Component {
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
-                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                       {this.state.document_info.sender_position}{' '}
                     </Text>
                   </View>
@@ -344,7 +360,7 @@ export default class HistoryScreen extends Component {
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
-                    <Text style={{justifyContent: 'flex-end', right: 60}}>
+                    <Text style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}>
                       {this.state.document_info.sender_address}{' '}
                     </Text>
                   </View>
@@ -364,7 +380,7 @@ export default class HistoryScreen extends Component {
               </View>
               <View style={{flex: 1}}>
                 <Text
-                  style={{justifyContent: 'flex-end', right: 60}}
+                  style={{justifyContent: 'flex-end', right: 60,fontWeight:'bold'}}
                   numberOfLines={100}>
                   {this.state.document_info.subject}{' '}
                 </Text>
@@ -394,6 +410,10 @@ export default class HistoryScreen extends Component {
             timeContainerStyle={{minWidth: 52, marginTop: -5}}
             listViewContainerStyle={{
               paddingTop: 20,
+              paddingBottom: (Layout.window.height / 100) * 10,
+              
+              
+              
             }}
             timeStyle={styles.time}
           />
@@ -414,12 +434,15 @@ const styles = StyleSheet.create({
     top: 5,
     width: (Layout.window.width / 100) * 95,
     height: (Layout.window.height / 100) * 80,
+    
     // backgroundColor:'yellow'
   },
   timeline: {
     // backgroundColor:'red',
+    
     top: 20,
     width: (Layout.window.width / 100) * 95,
+    
   },
   cardHeader: {
     fontWeight: 'bold',
@@ -452,6 +475,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#050A0D',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  right: {
+    right:(Layout.window.width / 100) * 2,
+    bottom:(Layout.window.height / 100) * 2,
+    color: Colors.green,
     fontSize: 12,
     fontWeight: 'bold',
   },

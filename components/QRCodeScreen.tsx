@@ -88,7 +88,10 @@ export default class QRCodeScreen extends Component{
                 okButtonTextStyle: styles.confirmButtonText,
                 callback: () => {    
                   this.setState({isBarcodeRead:true});              
-                  Popup.hide()                                    
+                  Popup.hide()                                 
+                  this.props.navigation.navigate('History', {
+                    document_info: [{document_number:payload.document_number}],
+                  })   
                 },              
               })
               

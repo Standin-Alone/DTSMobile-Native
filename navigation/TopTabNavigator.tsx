@@ -21,7 +21,9 @@ export default function TopTabNavigator(props) {
   }
   return (
     
-    <Tab.Navigator screenOptions={{tabBarStyle:styles.screen }}  
+    <Tab.Navigator screenOptions={{tabBarStyle:styles.screen, tabBarIndicatorStyle: {
+      backgroundColor: null,
+    }, }}  
     style={{top:(Layout.window.height / 100) * 2}}
   
     >
@@ -35,7 +37,9 @@ export default function TopTabNavigator(props) {
           tabBarContentContainerStyle:styles.content,
           tabBarActiveTintColor:Colors.new_color_palette.brown,                   
           tabBarLabelStyle:styles.label, 
+          lazy:true,
           tabBarIcon: ()=><Icon name="file-download" size={20} color={Colors.new_color_palette.orange}/>,
+
       }}
       
         listeners={({navigation,defaultHandler})=>({tabPress:e=>{
@@ -50,6 +54,7 @@ export default function TopTabNavigator(props) {
       
       
       options ={{
+          lazy:true,
           tabBarItemStyle:styles.tabBarCard,
           tabBarContentContainerStyle:styles.content,
           tabBarActiveTintColor:Colors.new_color_palette.brown,
@@ -72,7 +77,8 @@ tabBarCard:{
   
     marginRight:20,
     left:(Layout.window.width / 100 ) * 2,
-    backgroundColor:'#EEEEEE'
+    // backgroundColor:'#EEEEEE',
+    backgroundColor:'#F0D290'
     
 },
 content:{

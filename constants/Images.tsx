@@ -3,6 +3,7 @@ let user_icon = require('../assets/images/user-icon-circle.png');
 let login_bg = require('../assets/images/login-bg.jpg');
 let base_bg = require('../assets/images/base-bg.jpg');
 let otp_bg = require('../assets/images/otp-bg.jpg');
+let document_complete = require('../assets/images/document-complete.jpg');
 
 
-export default {splash_screen_logo,user_icon,login_bg,otp_bg,base_bg}
+export default {splash_screen_logo,user_icon,login_bg,otp_bg,base_bg,document_complete}

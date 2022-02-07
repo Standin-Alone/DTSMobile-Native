@@ -31,7 +31,7 @@ export default class HomeScreen extends Component {
       KEYS_TO_FILTERS: ['document_number'],
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
     };
@@ -150,11 +150,11 @@ const styles = StyleSheet.create({
 
   searchTextInput: {
     borderRadius: 10,
-    width: (Layout.window.width / 100) * 90,
+    width: (Layout.window.width / 100) * 95,
     borderWidth: 1,
     borderColor: '#ddd',
     top:(Layout.window.height / 100) * 10 ,
-    left: 20,
+    left: 10,
   },
   documentNumber: {
     color: Colors.new_color_palette.title,
@@ -214,8 +214,8 @@ const styles = StyleSheet.create({
     top: (Layout.window.height / 100) * 1,
     flexGrow: 0,
     zIndex: 1,
-    left: 20,
-    width: (Layout.window.width / 100) * 90,
+    left: 10,
+    width: (Layout.window.width / 100) * 95,
     borderColor: Colors.new_color_palette.divider,
   },
 });

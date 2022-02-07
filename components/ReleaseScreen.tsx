@@ -47,7 +47,7 @@ export default class ReleaseScreen extends React.Component {
       openActionPicker: false,
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       actions: [

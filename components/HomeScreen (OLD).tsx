@@ -31,7 +31,7 @@ export default class HomeScreen extends Component {
       KEYS_TO_FILTERS:['document_number'],
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       }
     };

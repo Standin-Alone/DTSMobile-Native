@@ -20,8 +20,7 @@ import {createFilter} from 'react-native-search-filter';
 import ModalSelector from 'react-native-modal-selector';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import {Card, List} from 'react-native-paper';
-import { FlatList } from 'react-native-gesture-handler';
-
+import {FlatList} from 'react-native-gesture-handler';
 
 export default class RecipientsScreen extends Component {
   constructor(props) {
@@ -29,7 +28,7 @@ export default class RecipientsScreen extends Component {
     console.warn(this.props.route.params);
     this.state = {
       offices_loading: true,
-      selected_action:'Set Action',
+      selected_action: 'Set Action',
       recipients: [],
       selectedRecipients: [],
       isLoading: false,
@@ -37,7 +36,7 @@ export default class RecipientsScreen extends Component {
       params: this.props.route.params,
       isAppLoading: false,
       defaultRecipients: [],
-      default_recipients_info:[],
+      default_recipients_info: [],
       openActionPicker: false,
       openSelectRecipient: false,
       ref: null,
@@ -51,7 +50,7 @@ export default class RecipientsScreen extends Component {
       ],
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       receiveFormOptions: {
@@ -91,7 +90,7 @@ export default class RecipientsScreen extends Component {
           </Pressable>
         ),
       },
-      multiSelectStyle: {        
+      multiSelectStyle: {
         searchTextInput: {
           color: '#050A0D',
         },
@@ -106,62 +105,57 @@ export default class RecipientsScreen extends Component {
           top: 30,
           height: (Layout.window.height / 100) * 80,
           overflow: 'scroll',
-          marginBottom:100,
+          marginBottom: 100,
         },
         button: {backgroundColor: Colors.new_color_palette.yellow},
         selectToggle: {
-          display:'none',
+          display: 'none',
           borderRadius: 20,
           width: (Layout.window.width / 100) * 85,
           padding: 20,
           left: 20,
           borderWidth: 1,
           borderColor: Colors.new_color_palette.orange,
-          backgroundColor: 'white',    
+          backgroundColor: 'white',
         },
-        
       },
     };
   }
 
+  // get offices function
+  get_offices = async () => {
+    let document_number = this.state.params.document_info[0].document_number;
+    let my_office_code = await AsyncStorage.getItem('office_code');
+    axios
+      .get(
+        ipConfig.ipAddress +
+          'MobileApp/Mobile/get_offices/' +
+          document_number +
+          '/' +
+          my_office_code,
+      )
+      .then(response => {
+        this.setState({isAppLoading: false, offices_loading: false});
 
-get_offices = async()=>{
-
-  let document_number = this.state.params.document_info[0].document_number;
-  let my_office_code = await AsyncStorage.getItem('office_code');
-  axios
-    .get(
-      ipConfig.ipAddress +
-        'MobileApp/Mobile/get_offices/' +
-        document_number +
-        '/' +
-        my_office_code,
-    )
-    .then(response => {
-      
-      this.setState({isAppLoading: false,offices_loading:false});
-
-      let clean_office = response.data['offices'].filter((item)=>item.children.length != 0)
-      console.log(response.data['default_recipients_info']);
-      this.setState({recipients: clean_office});
-      this.setState({
-        defaultRecipients: response.data['default_recipients'],
-        default_recipients_info: response.data['default_recipients_info'],            
+        let clean_office = response.data['offices'].filter(
+          item => item.children.length != 0,
+        );
+        console.log(response.data['default_recipients_info']);
+        this.setState({recipients: clean_office});
+        this.setState({
+          defaultRecipients: response.data['default_recipients'],
+          default_recipients_info: response.data['default_recipients_info'],
+        });
+      })
+      .catch(err => {
+        this.setState({isAppLoading: false});
+        console.warn(err.response.data);
       });
-            
-      
-    }).catch(err=>{this.setState({isAppLoading: false})
-    console.warn(err.response.data)
-  });
-
-  }
- async componentDidMount() {
-
-    this.setState({isAppLoading:true});
+  };
+  async componentDidMount() {
+    this.setState({isAppLoading: true});
     this.props.navigation.addListener('focus', async () => {
       this.get_offices();
-
-      
     });
 
     this.props.navigation.setOptions(this.state.receiveFormOptions);
@@ -174,76 +168,66 @@ get_offices = async()=>{
     </View>
   );
 
-
-
   // handle  go to review release screen
   handleGoToReviewReleaseScreen = async () => {
     let selectedRecipients = this.state.selectedRecipients;
     let defaultRecipients = this.state.defaultRecipients;
-    
-    
+
     this.setState({isAppLoading: true});
     // check if the action is not set action and return to se  nder
-    if(this.state.selected_action != 'Set Action' || this.state.selected_action == 'Return to Sender' ){
-
-
-      if(this.state.selectedRecipients.length == 0 && this.state.default_recipients_info.length  != 0 ){
-
-
-          
+    if (
+      this.state.selected_action != 'Set Action' ||
+      this.state.selected_action == 'Return to Sender'
+    ) {
+      if (
+        this.state.selectedRecipients.length == 0 &&
+        this.state.default_recipients_info.length != 0
+      ) {
         this.props.navigation.push('ReviewRelease', {
           document_info: this.state.params.document_info,
           base64_files: this.state.params.base64_files,
           selectedRecipients: defaultRecipients.concat(selectedRecipients),
-          action: this.state.selected_action
+          action: this.state.selected_action,
         });
-
-      }else if (this.state.selectedRecipients.length == 0 && this.state.default_recipients_info.length  == 0 &&  this.state.selected_action != 'Return to Sender' ){
+      } else if (
+        this.state.selectedRecipients.length == 0 &&
+        this.state.default_recipients_info.length == 0 &&
+        this.state.selected_action != 'Return to Sender'
+      ) {
         this.setState({isAppLoading: false});
         Popup.show({
-          type: 'danger',              
+          type: 'danger',
           title: 'Warning!',
-          textBody: "Please select Recipients.",                
-          buttonText:'Ok',
-          okButtonStyle:styles.confirmButton,
+          textBody: 'Please select Recipients.',
+          buttonText: 'Ok',
+          okButtonStyle: styles.confirmButton,
           okButtonTextStyle: styles.confirmButtonText,
-          callback: () => {    
-            
-            Popup.hide()                                    
-          },              
-        })
-      }else{
-
+          callback: () => {
+            Popup.hide();
+          },
+        });
+      } else {
         this.props.navigation.push('ReviewRelease', {
           document_info: this.state.params.document_info,
           base64_files: this.state.params.base64_files,
           selectedRecipients: defaultRecipients.concat(selectedRecipients),
-          action: this.state.selected_action
+          action: this.state.selected_action,
         });
-
       }
-      
-      
-    }else{
-      
+    } else {
       this.setState({isAppLoading: false});
       Popup.show({
-        type: 'danger',              
+        type: 'danger',
         title: 'Warning!',
-        textBody: "Please set action first.",                
-        buttonText:'Ok',
-        okButtonStyle:styles.confirmButton,
+        textBody: 'Please set action first.',
+        buttonText: 'Ok',
+        okButtonStyle: styles.confirmButton,
         okButtonTextStyle: styles.confirmButtonText,
-        callback: () => {    
-          
-          Popup.hide()                                    
-        },              
-      })
-      
+        callback: () => {
+          Popup.hide();
+        },
+      });
     }
-    
-
-
   };
 
   renderStepIndicator = (params: any) => (
@@ -263,70 +247,64 @@ get_offices = async()=>{
           />
         </View>
         <View style={styles.innerContainer}>
-        <Button
-              textStyle={styles.select_action}
+          <Button
+            textStyle={styles.select_action}
+            style={{
+              borderColor: Colors.new_color_palette.blue_background,
+              backgroundColor: Colors.new_color_palette.blue,
+            }}
+            activityIndicatorColor={'white'}
+            isLoading={this.state.isLoading}
+            disabledStyle={{opacity: 1}}
+            onPress={() =>
+              this.setState({
+                openActionPicker:
+                  this.state.openActionPicker == false ? true : false,
+              })
+            }>
+            {this.state.selected_action}
+          </Button>
+          <Text style={styles.list_of_recipients_title}>
+            <FontAwesome
+              name="info-circle"
+              size={18}
+              color={Colors.color_palette.orange}
+            />{' '}
+            Additional Recipients
+          </Text>
+
+          {this.state.selected_action != 'Return to Sender' &&
+          this.state.selected_action != 'Set Action' ? (
+            <FontAwesome
+              name="edit"
+              size={18}
+              color={Colors.new_color_palette.blue}
               style={{
-                borderColor: Colors.new_color_palette.blue_background,
-                backgroundColor: Colors.new_color_palette.blue,
+                left: (Layout.window.width / 100) * 85,
+                bottom: (Layout.window.height / 100) * 0.5,
               }}
-              activityIndicatorColor={'white'}
-              isLoading={this.state.isLoading}
-              disabledStyle={{opacity: 1}}
-              onPress={() =>
-                this.setState({
-                  openActionPicker:
-                    this.state.openActionPicker == false ? true : false,
-                })
-              }>
-              {this.state.selected_action}
-            </Button>
-            <Text style={styles.list_of_recipients_title}>
-                <FontAwesome
-                    name="info-circle"
-                    size={18}
-                    color={Colors.color_palette.orange}
-                  /> Additional Recipients
+              onPress={() => this.refs.multiSelect._toggleSelector()}
+            />
+          ) : null}
 
-
-                  
-            </Text>
-
-            {this.state.selected_action != 'Return to Sender' && this.state.selected_action != 'Set Action' ?
-
-                <FontAwesome
-                name="edit"
-                size={18}
-                color={Colors.new_color_palette.blue}                    
-                style={{left:(Layout.window.width /100 ) * 85,bottom:(Layout.window.height /100 ) * 0.5}}                    
-                onPress={()=>this.refs.multiSelect._toggleSelector()}
-                /> :
-                null
-
-
-            
-            }
-         
-
-            
-          <ScrollView style={styles.recipient_office_select} showsVerticalScrollIndicator>
+          <ScrollView
+            style={styles.recipient_office_select}
+            showsVerticalScrollIndicator>
             <ModalSelector
-            
               data={this.state.actions}
               onChange={option => {
                 console.warn(option.label);
-                if(this.state.recipients.length == 0){
-                  this.get_offices()
-                }                
-
-                if(option.label != 'Return to Sender'){
-                  this.refs.multiSelect._toggleSelector();
-                }else{
-
-                  this.setState({selectedRecipients:[]});
+                if (this.state.recipients.length == 0) {
+                  this.get_offices();
                 }
-                
-                
-                this.setState({selected_action:option.label})
+
+                if (option.label != 'Return to Sender') {
+                  this.refs.multiSelect._toggleSelector();
+                } else {
+                  this.setState({selectedRecipients: []});
+                }
+
+                this.setState({selected_action: option.label});
               }}
               visible={this.state.openActionPicker}
               initValue="Release"
@@ -341,25 +319,22 @@ get_offices = async()=>{
               }}
             />
 
-         
-        
             <SectionedMultiSelect
               loading={this.state.offices_loading}
               ref="multiSelect"
               searchPlaceholderText="Search by Office or Division"
               items={this.state.recipients}
               IconRenderer={MaterialIcons}
-              
               uniqueKey="id"
               subKey="children"
               selectText="Select recipients..."
               showDropDowns={true}
               readOnlyHeadings={true}
-              onSelectedItemsChange={value => {                
+              onSelectedItemsChange={value => {
                 this.setState({selectedRecipients: value});
               }}
               showRemoveAll={true}
-              filterItems={searchTerm => {                
+              filterItems={searchTerm => {
                 const filteredRecipients = this.state.recipients.filter(
                   (item, index) =>
                     item.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -370,44 +345,35 @@ get_offices = async()=>{
               selectedItems={this.state.selectedRecipients}
               highlightChildren={true}
               styles={this.state.multiSelectStyle}
-
-            
             />
           </ScrollView>
-
-          
-   
         </View>
-
 
         {/* default recipients */}
         <Text style={styles.add_recipients_title}>
-                <FontAwesome
-                    name="info-circle"
-                    size={18}
-                    color={Colors.color_palette.orange}
-                  /> Other Recipients
+          <FontAwesome
+            name="info-circle"
+            size={18}
+            color={Colors.color_palette.orange}
+          />{' '}
+          Other Recipients
         </Text>
-        
+
         <FlatList
           horizontal
-          
           data={this.state.default_recipients_info}
-          ListEmptyComponent={()=>this.emptyComponent()}
-          renderItem={({item})=>(
+          ListEmptyComponent={() => this.emptyComponent()}
+          renderItem={({item}) => (
             <Card style={styles.default_recipients_list}>
-              <Card.Title title={item.info_division}  titleStyle={styles.info_service} 
+              <Card.Title
+                title={item.info_division}
+                titleStyle={styles.info_service}
                 subtitle={item.info_service}
               />
-              
             </Card>
           )}
-
           contentContainerStyle={styles.flatListContainer}
-          
         />
-
-
 
         <View style={{flex: 1}}>
           <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
@@ -522,58 +488,56 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   recipient_office_select: {
-    height: (Layout.window.height / 100) * 27,    
-    top: (Layout.window.height / 100) * 5,   
-    paddingBottom:20 
+    height: (Layout.window.height / 100) * 27,
+    top: (Layout.window.height / 100) * 5,
+    paddingBottom: 20,
   },
-  select_action:{
-    color:'white'
+  select_action: {
+    color: 'white',
   },
-  list_of_recipients_title:{
-    color:Colors.light,
-    fontWeight:'bold',
-    fontSize:18,
+  list_of_recipients_title: {
+    color: Colors.light,
+    fontWeight: 'bold',
+    fontSize: 18,
     top: (Layout.window.height / 100) * 2,
   },
-  default_recipients_title:{    
-    bottom:(Layout.window.height / 100) * 23,
-    
+  default_recipients_title: {
+    bottom: (Layout.window.height / 100) * 23,
   },
-  add_recipients_title:{
+  add_recipients_title: {
     top: (Layout.window.height / 100) * 20,
-    color:Colors.light,
-    fontWeight:'bold',
-    fontSize:18,
+    color: Colors.light,
+    fontWeight: 'bold',
+    fontSize: 18,
   },
   empty: {
-    
-    backgroundColor:'white',
-    width:(Layout.window.width / 100) * 90,
-    padding:20,
-    borderRadius:20,
+    backgroundColor: 'white',
+    height: 100,
+    width: (Layout.window.width / 100) * 90,
+    padding: 20,
+    borderRadius: 20,
     left: (Layout.window.height / 100) * 1,
   },
   emptyText: {
     color: Colors.new_color_palette.text,
-    fontSize: 23,
+    fontSize: 20,
     fontWeight: 'bold',
   },
-  default_recipients_list:{    
-    left:10,
-    marginRight:20,
+  default_recipients_list: {
+    left: 10,
+    marginRight: 20,
     width: (Layout.window.width / 100) * 92,
-    height:(Layout.window.height / 100) *10,    
+    height: (Layout.window.height / 100) * 10,
   },
   flatListContainer: {
     flexGrow: 0,
-    top: (Layout.window.height / 100) * 23,
+    top: (Layout.window.height / 100) * 20,
     paddingBottom: (Layout.window.height / 100) * 35,
     paddingRight: (Layout.window.height / 100) * 15,
-    paddingTop:20,
-        
+    paddingTop: 20,
   },
-  info_service:{
-    fontWeight:'bold',
-    fontSize:14,
-  }
+  info_service: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
 });

@@ -37,7 +37,7 @@ export default class ReviewReleaseScreen extends Component {
       isAppLoading: false,
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       actions: [

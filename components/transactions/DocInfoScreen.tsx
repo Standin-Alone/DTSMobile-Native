@@ -28,7 +28,7 @@ export default class DocInfoScreen extends Component {
       isAppLoading: false,
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       receiveFormOptions: {

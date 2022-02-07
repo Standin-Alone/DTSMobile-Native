@@ -28,7 +28,7 @@ export default class IncomingScreen extends Component {
       KEYS_TO_FILTERS: ['document_number'],
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
     };
@@ -172,51 +172,6 @@ export default class IncomingScreen extends Component {
             
   
   );
-
-  // old  render item
-  // handleRenderItem = ({item}) => (
-  //   <View style={styles.card}>
-  //     <View style={{flexDirection: 'row', width: '100%'}}>
-  //       <FontAwesome
-  //         name="file"
-  //         size={50}
-  //         color={Colors.color_palette.orange}
-  //         style={{marginLeft: 60, top: 10, right: 0, left: 0}}
-  //       />
-  //       <Text style={styles.documentNumber} adjustsFontSizeToFit>
-  //         {item.document_number}
-  //       </Text>
-  //       <TouchableOpacity
-
-  //         style={styles.viewButton}
-  //         onPress={() =>{
-
-  //           this.props.navigation.navigate('History', {document_info: [item]})
-
-  //         }
-  //         }>
-  //         <Text style={styles.viewHistory}>View</Text>
-
-  //       </TouchableOpacity>
-  //     </View>
-  //     <Text
-  //       style={{
-  //         left: 115,
-  //         fontSize: 10,
-  //         bottom: 20,
-  //         color: Colors.new_color_palette.text,
-  //       }}
-  //       adjustsFontSizeToFit>
-  //       {item.subject}
-  //     </Text>
-  //     <Text>{'\n'}</Text>
-  //     <View
-  //       style={{
-  //         borderBottomWidth: 2,
-  //         borderBottomColor: Colors.new_color_palette.divider,
-  //       }}></View>
-  //   </View>
-  // );
 
   //this component will show if flatlist is empty
   emptyComponent = () => (

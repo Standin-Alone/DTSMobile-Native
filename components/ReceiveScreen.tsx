@@ -26,7 +26,7 @@ export default class ReceiveScreen extends Component {
       isAppLoading: false,
       spinner: {
         isVisible: true,
-        color: Colors.color_palette.orange,
+        color: Colors.light,
         size: 60,
       },
       receiveFormOptions: {
@@ -151,7 +151,7 @@ export default class ReceiveScreen extends Component {
                     type: 'danger',
                     title: 'Error!',
                     textBody:
-                      'Sorry you are not valid to receive this document.',
+                      'You already receive this document.',
                     buttonText: 'I understand',
                     okButtonStyle: styles.confirmButton,
                     okButtonTextStyle: styles.confirmButtonText,
