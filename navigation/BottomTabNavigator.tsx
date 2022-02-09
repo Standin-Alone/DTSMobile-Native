@@ -103,7 +103,7 @@ export default function BottomTabNavigator() {
 
   <Tabs.Screen  options={({navigation})=>({
       tabBarIcon: ()=> <Icon name="qrcode" size={40}  color={'white'}/>,
-      headerTitle:'Scan Route Slip QR Code',
+      headerTitle:'Scan Routing Slip QR Code',
       headerTransparent:true,
       headerTitleStyle:styles.bottomTitle,
       headerTintColor:Colors.new_color_palette.orange,

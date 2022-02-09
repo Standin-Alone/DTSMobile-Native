@@ -3,5 +3,5 @@
 //export  const ipAddress = 'http://172.17.212.75/dts-web/'; //IP SA OFFICE (VIP)
 //export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; //https:/172.16.200.41/dts/ //DEV SERVER IP
 //export  const ipAddress = 'http://172.17.150.112/dts-web/'; //IP SA OFFICE (ICT)
-export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; 
-//export  const ipAddress = 'http://172.17.150.56/dts-web/';
+//export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; 
+export  const ipAddress = 'http://172.17.150.56/dts-web/';

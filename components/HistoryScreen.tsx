@@ -29,6 +29,7 @@ export default class HistoryScreen extends Component {
       refreshing: false,
       history: [],
       released_to: [],
+      binded_doc_number:[],
       params: this.props.route.params,
       document_info: [],
       historyOptions: {
@@ -56,6 +57,7 @@ export default class HistoryScreen extends Component {
           history: response.data['history'],
           released_to: response.data['released_to'],
           document_info: response.data['document_info'],
+          binded_doc_number: response.data['binded_doc_number'],
           refreshing: false,
         });
       })
@@ -76,6 +78,7 @@ export default class HistoryScreen extends Component {
   renderFooter = () => {};
 
   render_timeline = (rowData, index) => {
+    
     let get_current_index = index + 1;
     return (
       <View style={{flex: 1}}>
@@ -212,7 +215,9 @@ export default class HistoryScreen extends Component {
             {/*  list of next recipients */}
             {/* <FlatList
               data={this.state.released_to}
-            renderItem={({item,index}) => <Text style={styles.released_to_style}>{index+1}. {item.INFO_DIVISION}</Text>}
+              renderItem={({item,index}) =>
+              
+               <Text style={styles.released_to_style}>{index+1}. {item.INFO_DIVISION}</Text>}
           /> */}
           </View>
         ) : null}
@@ -224,6 +229,32 @@ export default class HistoryScreen extends Component {
     // design start here
     return (
       <View style={styles.container}>
+        <Card
+          style={{
+            width: (Layout.window.width / 100) * 95,
+            marginTop: (Layout.window.height / 100) * 10,
+            backgroundColor: Colors.light,
+          }}
+
+          onPress={()=>{
+            
+            this.props.navigation.navigate('History', {
+              document_info: this.state.params.document_info[0].document_number,
+            });
+          }}
+          elevation={2}>
+          <Card.Title
+            title= {<Text>Binded Document Number: </Text>}
+        
+            
+            titleStyle={styles.title}
+            subtitle={this.state.binded_doc_number}
+            subtitleStyle={styles.binded_doc_number}
+            subtitleNumberOfLines={10}
+          
+          />
+            
+          </Card>
         <Card
           style={{
             width: (Layout.window.width / 100) * 95,
@@ -489,6 +520,12 @@ const styles = StyleSheet.create({
     color: Colors.new_color_palette.orange,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  binded_doc_number: {
+    color: Colors.new_color_palette.blue,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
   released_to_style: {
     fontSize: 10,

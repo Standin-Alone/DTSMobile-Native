@@ -78,22 +78,26 @@ export default class QRCodeScreen extends Component{
               })
   
             }else if(response.data['Message'] == 'Not Authorize'){
-         
-              Popup.show({
-                type: 'danger',              
-                title: 'Error!',
-                textBody: "You don't have authorize to receive this document or you already received this document.",                
-                buttonText:'Ok',
-                okButtonStyle:styles.confirmButton,
-                okButtonTextStyle: styles.confirmButtonText,
-                callback: () => {    
-                  this.setState({isBarcodeRead:true});              
-                  Popup.hide()                                 
-                  this.props.navigation.navigate('History', {
-                    document_info: [{document_number:payload.document_number}],
-                  })   
-                },              
-              })
+              
+              this.props.navigation.navigate('History', {
+                document_info: [{document_number:payload.document_number}],
+              })   
+              this.setState({isBarcodeRead:true});  
+              // Popup.show({
+              //   type: 'danger',              
+              //   title: 'Error!',
+              //   textBody: "You don't have authorize to receive this document or you already received this document.",                
+              //   buttonText:'Ok',
+              //   okButtonStyle:styles.confirmButton,
+              //   okButtonTextStyle: styles.confirmButtonText,
+              //   callback: () => {    
+              //     this.setState({isBarcodeRead:true});              
+              //     Popup.hide()                                 
+              //     this.props.navigation.navigate('History', {
+              //       document_info: [{document_number:payload.document_number}],
+              //     })   
+              //   },              
+              // })
               
             }else if(response.data['Message'] == 'Document were still not release.'){
                         

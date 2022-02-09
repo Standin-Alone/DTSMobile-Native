@@ -114,7 +114,7 @@ export default class OutgoingScreen extends Component {
       <Card.Content>
         <Moment element={Text}  
               style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}
-              fromNow>{ item.log_date}</Moment>
+              fromNow>{ item.date_created}</Moment>
       </Card.Content>
       </Card>
     </Animatable.View>
@@ -159,7 +159,7 @@ export default class OutgoingScreen extends Component {
        <Card.Content>
         <Moment element={Text}  
               style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}   
-              fromNow>{ item.log_date}</Moment>
+              fromNow>{ item.date_created}</Moment>
       </Card.Content>
     </Card>
   </Animatable.View> 
