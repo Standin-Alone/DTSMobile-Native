@@ -44,14 +44,13 @@ export default class OutgoingScreen extends Component {
         office_code: await AsyncStorage.getItem('office_code'),
         current_page: 1,
       };
-      console.warn(payload.office_code)
+      
       if (response.isConnected) {
         axios
           .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code)
           .then(response => {
             
-            if (response.data['Message'] == 'true') {
-              console.warn(response);
+            if (response.data['Message'] == 'true') {              
               this.setState({data: response.data['doc_info']});
               this.setState({refreshing: false});
             }

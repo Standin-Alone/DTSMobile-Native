@@ -46,10 +46,10 @@ export default class HomeScreen extends Component {
           .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_doc_type')
           .then(response => {
             if (response.data['Message'] == 'true') {
-              // this.setState(prevState=> ([...prevState.data,response.data['doc_type']]))
+              
 
               response.data['doc_type'].unshift({type_id: 'All', type: 'All'});
-              console.warn(response.data['doc_type']);
+              
               this.setState({data: response.data['doc_type']});
 
               this.setState({refreshing: false});

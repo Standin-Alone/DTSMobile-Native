@@ -50,7 +50,7 @@ export default class IncomingScreen extends Component {
           .then(response => {
             
             if (response.data['Message'] == 'true') {
-              console.warn(response);
+              
               this.setState({data: response.data['doc_info']});
               this.setState({refreshing: false});
             }

@@ -52,7 +52,7 @@ export default class HistoryScreen extends Component {
         ipConfig.ipAddress + 'MobileApp/Mobile/get_history/' + document_number,
       )
       .then(response => {
-        console.warn(response.data['document_info']);
+        
         this.setState({
           history: response.data['history'],
           released_to: response.data['released_to'],
@@ -226,35 +226,52 @@ export default class HistoryScreen extends Component {
   };
 
   render() {
+
     // design start here
     return (
       <View style={styles.container}>
-        <Card
-          style={{
-            width: (Layout.window.width / 100) * 95,
-            marginTop: (Layout.window.height / 100) * 10,
-            backgroundColor: Colors.light,
-          }}
-
-          onPress={()=>{
-            
-            this.props.navigation.navigate('History', {
-              document_info: this.state.params.document_info[0].document_number,
-            });
-          }}
-          elevation={2}>
-          <Card.Title
-            title= {<Text>Binded Document Number: </Text>}
-        
-            
-            titleStyle={styles.title}
-            subtitle={this.state.binded_doc_number}
-            subtitleStyle={styles.binded_doc_number}
-            subtitleNumberOfLines={10}
-          
-          />
-            
+      
+          {/* list binded doc number */}
+          {/* check if it has binded document number */}
+          {this.state.binded_doc_number.length > 0 && 
+            <Card
+            style={{
+              width: (Layout.window.width / 100) * 95,
+              marginTop: (Layout.window.height / 100) * 10,
+              height: (Layout.window.height / 100) * 10,
+              backgroundColor: Colors.light,
+              overflow:'hidden'
+       
+            }}   
+            elevation={2}
+            >
+            <Card.Title
+              title= {<Text style={styles.binded_doc_number_title}>Binded Document Number: </Text>}                    
+              titleStyle={styles.binded_doc_number_title}
+              subtitle={
+                <FlatList
+                  scrollEnabled
+                  data={this.state.binded_doc_number}
+                  
+                  renderItem={({item,index})=>
+                    <Text 
+                      style={styles.binded_doc_number}
+                    onPress={()=>{                  
+                      // go to binded document number history
+                      this.props.navigation.push('History', {
+                        document_info: [{document_number:item.orig_doc_number}],
+                      });
+                
+                    }}>{item.orig_doc_number}</Text>
+                  }
+                />
+              }
+              subtitleStyle={{top:20}}
+              subtitleNumberOfLines={10}            
+            />            
           </Card>
+        }
+        {/* document info card */}
         <Card
           style={{
             width: (Layout.window.width / 100) * 95,
@@ -509,6 +526,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
+
   right: {
     right:(Layout.window.width / 100) * 2,
     bottom:(Layout.window.height / 100) * 2,
@@ -526,6 +544,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textDecorationLine: 'underline',
+  },
+  binded_doc_number_title: {
+    
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   released_to_style: {
     fontSize: 10,
