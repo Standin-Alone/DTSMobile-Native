@@ -285,8 +285,8 @@ export default class ReceiveScreen extends Component {
 
                 <View style={styles.titleView}>
                   <Text style={styles.titleValue} numberOfLines={10}>
-                    {item.origin_division}
-
+                    {item.origin_division},
+                    {'\n'}
                     {item.origin_service}
                   </Text>
                 </View>
@@ -297,7 +297,7 @@ export default class ReceiveScreen extends Component {
                 <View style={styles.titleView}>
               
                   <Text style={styles.titleValue}>
-                    {item.sender_division}
+                    {item.sender_division},
                     {'\n'}
                     {item.sender_service}
                   </Text>

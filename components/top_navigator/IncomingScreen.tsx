@@ -115,6 +115,8 @@ export default class IncomingScreen extends Component {
             style={{left: (Layout.window.width / 100) * 12,color:Colors.warning, fontSize:10}}
       
           fromNow>{ item.date_added}</Moment>
+
+          
     </Card.Content>
       </Card>
     </Animatable.View>

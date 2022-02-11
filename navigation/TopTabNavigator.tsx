@@ -24,8 +24,9 @@ export default function TopTabNavigator(props) {
     <Tab.Navigator screenOptions={{tabBarStyle:styles.screen, tabBarIndicatorStyle: {
       backgroundColor: null,
     }, }}  
+
     style={{top:(Layout.window.height / 100) * 2}}
-  
+    swipeEnabled={false}
     >
       
       <Tab.Screen name="Incoming" component={({navigation})=><IncomingScreen docType={props.docType.type_id} searchValue = {props.searchValue} navigation = {navigation}/>}

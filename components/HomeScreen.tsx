@@ -85,7 +85,7 @@ export default class HomeScreen extends Component {
             iconColor={Colors.new_color_palette.orange}
             iconSize={20}
             iconWidth={40}
-            inputPadding={16}
+            inputPadding={10}
             style={[
               styles.searchTextInput,
               {

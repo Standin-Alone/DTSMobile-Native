@@ -335,7 +335,9 @@ export default class ReleaseScreen extends React.Component {
                   if(response.status == 200){
                     console.warn(response.data);
                     if (response.data['Message'] == 'true') {
-                      console.warn(response.data)
+                      console.warn( this.state.selectedRecipients)
+
+
                       // this.state.selectedRecipients.map(item =>
                       //   SocketConnection.socket.emit('push notification', {
                       //     channel:

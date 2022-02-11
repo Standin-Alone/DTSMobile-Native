@@ -266,7 +266,7 @@ export default class HistoryScreen extends Component {
                   }
                 />
               }
-              subtitleStyle={{top:20}}
+              subtitleStyle={{top:5}}
               subtitleNumberOfLines={10}            
             />            
           </Card>

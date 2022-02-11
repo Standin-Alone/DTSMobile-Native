@@ -23,7 +23,7 @@ export default class OutgoingScreen extends Component {
       data: [],
       isAppLoading: false,
       refreshing: false,
-      currentPage: 1,
+      page: 0,
       search: '',
       KEYS_TO_FILTERS: ['document_number'],
       spinner: {
@@ -47,16 +47,16 @@ export default class OutgoingScreen extends Component {
       
       if (response.isConnected) {
         axios
-          .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code)
+          .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+0)
           .then(response => {
             
             if (response.data['Message'] == 'true') {              
-              this.setState({data: response.data['doc_info']});
+              this.setState({data: response.data['doc_info'],page:0});
               this.setState({refreshing: false});
             }
           })
           .catch(error => {
-            console.warn(error);
+            console.warn(error.response.data);
             this.setState({refreshing: false});
           });
       }
@@ -211,6 +211,40 @@ export default class OutgoingScreen extends Component {
   //       }}></View>
   //   </View>
   // );
+  
+
+  // load more on end reached
+  loadMore = ()=>{
+
+    
+      
+    NetInfo.fetch().then(async response => {
+      let payload = {
+        office_code: await AsyncStorage.getItem('office_code'),
+        current_page: 1,
+      };
+      
+      if (response.isConnected) {
+        axios
+          .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+this.state.page)
+          .then(response => {
+            
+            if (response.data['Message'] == 'true') {                            
+              let new_data = response.data['doc_info'];    
+              this.setState({data: [...new Set(this.state.data),...new_data]});
+              
+              this.setState({refreshing: false});
+            }
+          })
+          .catch(error => {
+            console.warn(error);
+            
+            this.setState({refreshing: false});
+          });
+      }
+    });
+
+  }
 
   //this component will show if flatlist is empty
   emptyComponent = () => (
@@ -246,7 +280,17 @@ export default class OutgoingScreen extends Component {
           contentContainerStyle={styles.flatListContainer}
           onRefresh={this.handleRefreshData}
           refreshing={this.state.refreshing}
-      
+
+          onEndReachedThreshold = {0.1}
+          onEndReached={async ({distanceFromEnd}) => {     
+          
+              
+            if (distanceFromEnd > 0) 
+             {console.warn(distanceFromEnd) 
+               await this.setState((prevState) => ({page:prevState.page + 4}));
+               await this.loadMore();
+             }
+         }}
         />
       </Animatable.View>
     );
@@ -316,7 +360,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     flexGrow: 0,
-    paddingBottom: (Layout.window.height / 100) * 35,
+    paddingBottom: (Layout.window.height / 100) *35,    
   },
   empty: {
     top: 40,

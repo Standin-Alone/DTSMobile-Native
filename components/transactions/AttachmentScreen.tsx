@@ -121,7 +121,7 @@ export default class AttachmentScreen extends Component {
         // get results of file
         results.map(async item_file => {
           // check if file is less than 10 mb
-          if (item_file.size <= 10000000) {
+          if (item_file.size <= 30000000) {
             const convert_to_base64 = await RNFS.readFile(
               item_file.uri,
               'base64',

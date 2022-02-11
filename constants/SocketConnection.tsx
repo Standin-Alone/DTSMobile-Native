@@ -9,7 +9,12 @@ import io from 'socket.io-client/dist/socket.io';
 //   });
 
 // ssl
-let socket = io('wss://devsysadd.da.gov.ph:8080');
+//dev
+//let socket = io('wss://devsysadd.da.gov.ph:8080'); 
+
+
+// prod
+let socket = io('wss://dts.da.gov.ph:8080');
 
 
 
