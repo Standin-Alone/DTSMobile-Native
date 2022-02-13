@@ -46,7 +46,7 @@ export default class IncomingScreen extends Component {
       };
       if (response.isConnected) {
         axios
-          .get(ipConfig.ipAddress + 'MobileApp/Mobile/incoming_documents/'+payload.office_code)
+          .get(ipConfig.ipAddress + '/MobileApp/Mobile/incoming_documents/'+payload.office_code)
           .then(response => {
             
             if (response.data['Message'] == 'true') {

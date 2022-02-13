@@ -47,7 +47,7 @@ export default class OutgoingScreen extends Component {
       
       if (response.isConnected) {
         axios
-          .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+0)
+          .get(ipConfig.ipAddress + '/MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+0)
           .then(response => {
             
             if (response.data['Message'] == 'true') {              
@@ -226,7 +226,7 @@ export default class OutgoingScreen extends Component {
       
       if (response.isConnected) {
         axios
-          .get(ipConfig.ipAddress + 'MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+this.state.page)
+          .get(ipConfig.ipAddress + '/MobileApp/Mobile/outgoing_documents/'+payload.office_code+'/'+this.state.page)
           .then(response => {
             
             if (response.data['Message'] == 'true') {                            
@@ -286,7 +286,7 @@ export default class OutgoingScreen extends Component {
           
               
             if (distanceFromEnd > 0) 
-             {console.warn(distanceFromEnd) 
+             {
                await this.setState((prevState) => ({page:prevState.page + 4}));
                await this.loadMore();
              }

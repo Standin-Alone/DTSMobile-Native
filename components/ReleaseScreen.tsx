@@ -248,7 +248,7 @@ export default class ReleaseScreen extends React.Component {
 
     this.props.navigation.setOptions(this.state.releaseFormOptions);
     axios
-      .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_offices')
+      .get(ipConfig.ipAddress + '/MobileApp/Mobile/get_offices')
       .then(response => {
         this.setState({recipients: response.data['offices']});
       });
@@ -321,7 +321,7 @@ export default class ReleaseScreen extends React.Component {
               // perform axios here
               axios
                 .post(
-                  ipConfig.ipAddress + 'MobileApp/Mobile/release_document',
+                  ipConfig.ipAddress + '/MobileApp/Mobile/release_document',
                   fd,
                   {
                     headers: {
@@ -396,7 +396,7 @@ export default class ReleaseScreen extends React.Component {
                 })
                 .catch(error => {
                   this.setState({isAppLoading: false});
-                  // console.log(error.response.data);
+                  console.log(error.response.data);
                   Popup.hide();
                 });
             } else {

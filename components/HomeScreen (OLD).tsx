@@ -48,7 +48,7 @@ export default class HomeScreen extends Component {
       };
       if (response.isConnected) {
         axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+          .post(ipConfig.ipAddress + '/MobileApp/Mobile/my_documents', payload)
           .then(response => {
             console.warn(response)
             if (response.data['Message'] == 'true') {
@@ -159,7 +159,7 @@ export default class HomeScreen extends Component {
     NetInfo.fetch().then((response: any) => {
       if (response.isConnected) {
         axios
-        .post(ipConfig.ipAddress + 'MobileApp/Mobile/my_documents', payload)
+        .post(ipConfig.ipAddress + '/MobileApp/Mobile/my_documents', payload)
           .then(async (response) => {
             if (response.status == 200) {
               if (response.data['Message'] == 'true') {

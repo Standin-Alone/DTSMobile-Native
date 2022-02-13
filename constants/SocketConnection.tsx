@@ -2,27 +2,13 @@
 window.navigator.userAgent = 'react-native';
 import React, {Component} from 'react';
 import io from 'socket.io-client/dist/socket.io';
-
-//localhost
-// let socket = io('http://172.17.211.9' + ':7980', {
-//     transports: ['websocket'],
-//   });
-
-// ssl
-//dev
-//let socket = io('wss://devsysadd.da.gov.ph:8080'); 
-
-
-// prod
-let socket = io('wss://dts.da.gov.ph:8080');
+import { ipAddress,ipAddress_socket } from '../ipconfig';
 
 
 
+let socket = io(ipAddress_socket+':8080'); 
 
-  
 
-  
- 
 
 
 

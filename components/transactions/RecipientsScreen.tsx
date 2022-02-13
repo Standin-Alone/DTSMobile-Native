@@ -122,6 +122,39 @@ export default class RecipientsScreen extends Component {
     };
   }
 
+
+  // return to sender offices 
+
+  // get offices function
+  get_last_recipients = async () => {
+    let document_number = this.state.params.document_info[0].document_number;
+    let my_office_code = await AsyncStorage.getItem('office_code');
+    axios
+      .get(
+        ipConfig.ipAddress +
+          '/MobileApp/Mobile/get_last_recipients/' +
+          document_number +
+          '/' +
+          my_office_code,
+      )
+      .then(response => {
+        this.setState({isAppLoading: false, offices_loading: false});
+        
+        let clean_office = response.data['offices'].filter(
+          item => item.children.length != 0,
+        );
+
+        
+        console.warn(clean_office)
+        this.setState({recipients: clean_office});
+        
+      })
+      .catch(err => {
+        this.setState({isAppLoading: false});
+        console.warn(err.response.data);
+      });
+  };
+
   // get offices function
   get_offices = async () => {
     let document_number = this.state.params.document_info[0].document_number;
@@ -129,7 +162,7 @@ export default class RecipientsScreen extends Component {
     axios
       .get(
         ipConfig.ipAddress +
-          'MobileApp/Mobile/get_offices/' +
+          '/MobileApp/Mobile/get_offices/' +
           document_number +
           '/' +
           my_office_code,
@@ -140,7 +173,9 @@ export default class RecipientsScreen extends Component {
         let clean_office = response.data['offices'].filter(
           item => item.children.length != 0,
         );
-        console.log(response.data['default_recipients_info']);
+
+        
+        
         this.setState({recipients: clean_office});
         this.setState({
           defaultRecipients: response.data['default_recipients'],
@@ -152,10 +187,11 @@ export default class RecipientsScreen extends Component {
         console.warn(err.response.data);
       });
   };
+  
   async componentDidMount() {
     this.setState({isAppLoading: true});
     this.props.navigation.addListener('focus', async () => {
-      this.get_offices();
+      
     });
 
     this.props.navigation.setOptions(this.state.receiveFormOptions);
@@ -174,10 +210,9 @@ export default class RecipientsScreen extends Component {
     let defaultRecipients = this.state.defaultRecipients;
 
     this.setState({isAppLoading: true});
-    // check if the action is not set action and return to se  nder
+    // check if the action is not set action and return to sender
     if (
-      this.state.selected_action != 'Set Action' ||
-      this.state.selected_action == 'Return to Sender'
+      this.state.selected_action != 'Set Action' 
     ) {
       if (
         this.state.selectedRecipients.length == 0 &&
@@ -189,10 +224,10 @@ export default class RecipientsScreen extends Component {
           selectedRecipients: defaultRecipients.concat(selectedRecipients),
           action: this.state.selected_action,
         });
+        
       } else if (
         this.state.selectedRecipients.length == 0 &&
-        this.state.default_recipients_info.length == 0 &&
-        this.state.selected_action != 'Return to Sender'
+        this.state.default_recipients_info.length == 0 
       ) {
         this.setState({isAppLoading: false});
         Popup.show({
@@ -228,6 +263,7 @@ export default class RecipientsScreen extends Component {
         },
       });
     }
+    this.setState({isAppLoading: true});
   };
 
   renderStepIndicator = (params: any) => (
@@ -273,7 +309,7 @@ export default class RecipientsScreen extends Component {
             Additional Recipients
           </Text>
 
-          {this.state.selected_action != 'Return to Sender' &&
+          {
           this.state.selected_action != 'Set Action' ? (
             <FontAwesome
               name="edit"
@@ -283,7 +319,9 @@ export default class RecipientsScreen extends Component {
                 left: (Layout.window.width / 100) * 85,
                 bottom: (Layout.window.height / 100) * 0.5,
               }}
-              onPress={() => this.refs.multiSelect._toggleSelector()}
+              onPress={() => {
+              
+                this.refs.multiSelect._toggleSelector()}}
             />
           ) : null}
 
@@ -293,16 +331,22 @@ export default class RecipientsScreen extends Component {
             <ModalSelector
               data={this.state.actions}
               onChange={option => {
-                console.warn(option.label);
-                if (this.state.recipients.length == 0) {
-                  this.get_offices();
-                }
+           
+           
+                  this.setState({offices_loading: true,recipients:[],selectedRecipients:[]})
 
-                if (option.label != 'Return to Sender') {
-                  this.refs.multiSelect._toggleSelector();
-                } else {
-                  this.setState({selectedRecipients: []});
-                }
+                  // get last recipients when return to sender is the selected action
+                  if(option.label == 'Return to Sender' ){
+                   
+                    this.get_last_recipients();
+                    
+                    this.refs.multiSelect._toggleSelector();
+                  }else{
+                      this.setState({})
+                      this.get_offices();
+                                     
+                    this.refs.multiSelect._toggleSelector();
+                  }
 
                 this.setState({selected_action: option.label});
               }}
@@ -321,6 +365,7 @@ export default class RecipientsScreen extends Component {
 
             <SectionedMultiSelect
               loading={this.state.offices_loading}
+          
               ref="multiSelect"
               searchPlaceholderText="Search by Office or Division"
               items={this.state.recipients}
@@ -331,8 +376,29 @@ export default class RecipientsScreen extends Component {
               showDropDowns={true}
               readOnlyHeadings={true}
               onSelectedItemsChange={value => {
-                this.setState({selectedRecipients: value});
+
+                this.setState({selectedRecipients: value})
+             
+                
               }}
+
+              onConfirm={()=>{
+             
+                  // check if return to sender is only one selected
+                  if(this.state.selectedRecipients.length > 1 && this.state.selected_action == 'Return to Sender'){
+                    
+                    alert('Please select on recipient only.')             
+                  }else{
+                    // check if selected recipients for other actions is greater than 0
+                    if(this.state.selectedRecipients.length == 0){
+                      alert('Please select recipients.')   
+                    }else{
+                      this.refs.multiSelect._toggleSelector();
+                    }
+                    
+                  }
+              }}  
+
               showRemoveAll={true}
               filterItems={searchTerm => {
                 const filteredRecipients = this.state.recipients.filter(
@@ -342,6 +408,11 @@ export default class RecipientsScreen extends Component {
 
                 return filteredRecipients;
               }}
+
+              
+
+      
+              
               selectedItems={this.state.selectedRecipients}
               highlightChildren={true}
               styles={this.state.multiSelectStyle}

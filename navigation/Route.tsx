@@ -51,7 +51,7 @@ PushNotification.configure({
 
       navigation.navigate('History',{document_info:[{document_number :data.document_number}]})
       
-    
+      
 
   }
 });
@@ -59,8 +59,9 @@ PushNotification.configure({
 
 
 SocketConnection.socket.on('connect', msg => {  
-      
+  console.warn('connect');
   SocketConnection.socket.on('get notification', async message => {
+    
     let user_id = await AsyncStorage.getItem('user_id');
     let office_code = await AsyncStorage.getItem('office_code');
     if (message.channel.includes(office_code) ) {        
@@ -98,6 +99,15 @@ SocketConnection.socket.on('connect', msg => {
   });
 });
 
+
+SocketConnection.socket.on("disconnect", (reason) => {
+  console.warn(JSON.stringify(reason.message));
+});
+
+SocketConnection.socket.on('connect_failed', function(err) {
+  console.warn(JSON.stringify(err.message));
+});
+
   return (
     <Root>
       <Stack.Navigator initialRouteName="Authentication" screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}   >               
@@ -129,13 +139,6 @@ export default function Route(){
 
 
   
-  // SocketConnection.socket.on("disconnect", (reason) => {
-  //   console.warn(JSON.stringify(reason.message));
-  // });
-
-  // SocketConnection.socket.on('connect_failed', function(err) {
-  //   console.warn(JSON.stringify(err.message));
-  // });
 
   return (
     <NavigationContainer>

@@ -182,7 +182,7 @@ export default class ReviewReleaseScreen extends Component {
               // perform axios here
               axios
                 .post(
-                  ipConfig.ipAddress + 'MobileApp/Mobile/release_document',
+                  ipConfig.ipAddress + '/MobileApp/Mobile/release_document',
                   fd,
                   {
                     headers: {

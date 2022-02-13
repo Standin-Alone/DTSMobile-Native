@@ -51,7 +51,7 @@ export default class LoginScreen extends Component {
     NetInfo.fetch().then(async (response)=>{
       if(response.isConnected){
         
-        axios.post(ipConfig.ipAddress+'MobileApp/Mobile/sign_in',data).then((response)=>{
+        axios.post(ipConfig.ipAddress+'/MobileApp/Mobile/sign_in',data).then((response)=>{
                        
           if(response.data['Message'] == 'true'){
             
@@ -64,7 +64,7 @@ export default class LoginScreen extends Component {
             
           } 
         }).catch((err)=>{
-          console.warn(err.response);
+          console.warn(err.response.data);
           this.setState({isLoading:false})
         });
     }else{

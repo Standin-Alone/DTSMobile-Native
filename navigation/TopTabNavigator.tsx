@@ -54,8 +54,7 @@ export default function TopTabNavigator(props) {
           component={({navigation})=><OutgoingScreen docType={props.docType.type_id} searchValue = {props.searchValue}  navigation = {navigation}/>}
       
       
-      options ={{
-          lazy:true,
+      options ={{          
           tabBarItemStyle:styles.tabBarCard,
           tabBarContentContainerStyle:styles.content,
           tabBarActiveTintColor:Colors.new_color_palette.brown,

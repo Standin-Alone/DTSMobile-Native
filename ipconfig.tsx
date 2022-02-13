@@ -1,8 +1,21 @@
-//export  const ipAddress = 'http://192.168.1.3/dts-web/';
-// export  const ipAddress = 'http://192.168.1.6/dts-web/';
-//export  const ipAddress = 'http://172.17.212.75/dts-web/'; //IP SA OFFICE (VIP)
-//export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; //https:/172.16.200.41/dts/ //DEV SERVER IP
-//export  const ipAddress = 'http://172.17.150.112/dts-web/'; //IP SA OFFICE (ICT)
-//export  const ipAddress = 'https://devsysadd.da.gov.ph/dts/'; 
-export  const ipAddress = 'https://dts.da.gov.ph/'; //prod
-//export  const ipAddress = 'http://172.17.150.56/dts-web/';
+
+// export  const ipAddress = 'https://dts.da.gov.ph';
+
+
+//export  const ipAddress = 'http://172.17.150.56/dts-web/'; //IP SA OFFICE (VIP)
+
+// Bahay
+// const ipAddress = 'http://192.168.1.11/dts-web';
+// const ipAddress_socket = 'http://192.168.1.11';
+
+// dev server
+// const ipAddress = 'https://devsysadd.da.gov.ph/dts';
+// const ipAddress_socket = 'wss://devsysadd.da.gov.ph';
+
+
+// prod server
+const ipAddress = 'https://dts.da.gov.ph';
+const ipAddress_socket = 'wss://dts.da.gov.ph';
+
+
+export {ipAddress_socket,ipAddress};

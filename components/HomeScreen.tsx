@@ -43,7 +43,7 @@ export default class HomeScreen extends Component {
     NetInfo.fetch().then(async response => {
       if (response.isConnected) {
         axios
-          .get(ipConfig.ipAddress + 'MobileApp/Mobile/get_doc_type')
+          .get(ipConfig.ipAddress + '/MobileApp/Mobile/get_doc_type')
           .then(response => {
             if (response.data['Message'] == 'true') {
               

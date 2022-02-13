@@ -45,22 +45,23 @@ export default class SplashScreenContainer extends React.Component {
 //     },3000);
 
 // }
+    
 
-
-
-componentDidMount() {
-  let self = this;
+handleNetworkChange = (info) =>{
+    let self = this;
+  
+  
   setTimeout(() => {
     NetInfo.fetch().then(async response => {
-      if (response.isConnected) {
+      if (info.isConnected) {
         let user_id = await AsyncStorage.getItem('user_id');
 
         axios
           .get(
-            ipConfig.ipAddress + 'MobileApp/Mobile/check_utility/' + DeviceInfo.getVersion(),
+            ipConfig.ipAddress + '/MobileApp/Mobile/check_utility/' + DeviceInfo.getVersion(),
           )
           .then(async response => {
-         
+            console.warn(response)
             
             // ENABLE THIS BEFORE GENERATING APK
             // check if the mobile application is on maintenance
@@ -103,7 +104,7 @@ componentDidMount() {
               }
             }
           })
-          .catch(err => console.warn(err.response));
+          .catch(err => console.warn(err));
       } else {        
 
         Popup.show({
@@ -115,13 +116,23 @@ componentDidMount() {
           okButtonStyle: styles.confirmButton,
           okButtonTextStyle: styles.confirmButtonText,
           callback: () => {
-            BackHandler.exitApp();
+            
             Popup.hide();
           },
         });
       }
     });
   }, 3000);
+}
+
+
+
+componentDidMount() {
+
+  NetInfo.addEventListener( this.handleNetworkChange);
+  
+
+
 }
  
 

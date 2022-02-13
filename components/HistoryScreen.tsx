@@ -23,7 +23,6 @@ export default class HistoryScreen extends Component {
   constructor(props) {
     super(props);
 
-    console.warn(this.props.route.params);
     this.state = {
       isLoading: false,
       refreshing: false,
@@ -40,7 +39,6 @@ export default class HistoryScreen extends Component {
       },
     };
 
-    console.warn(this.props.route.params);
   }
 
   get_history = () => {
@@ -49,7 +47,7 @@ export default class HistoryScreen extends Component {
 
     axios
       .get(
-        ipConfig.ipAddress + 'MobileApp/Mobile/get_history/' + document_number,
+        ipConfig.ipAddress + '/MobileApp/Mobile/get_history/' + document_number,
       )
       .then(response => {
         

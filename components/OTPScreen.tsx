@@ -46,7 +46,7 @@ export default class OTPScreen extends Component {
     NetInfo.fetch().then(async response => {
       if (response.isConnected) {
         axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/verify_otp', data)
+          .post(ipConfig.ipAddress + '/MobileApp/Mobile/verify_otp', data)
           .then(async response => {
             this.setState({error: true});
             if (response.data['Message'] == 'true') {
@@ -89,7 +89,7 @@ export default class OTPScreen extends Component {
     NetInfo.fetch().then(async response => {
       if (response.isConnected) {
         axios
-          .post(ipConfig.ipAddress + 'MobileApp/Mobile/resend_otp', data)
+          .post(ipConfig.ipAddress + '/MobileApp/Mobile/resend_otp', data)
           .then(response => {
             console.warn(response.data);
             if (response.data['Message'] == 'true') {

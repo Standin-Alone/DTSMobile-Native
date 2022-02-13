@@ -145,7 +145,7 @@ export default class DocInfoScreen extends Component {
                 <View style={styles.titleView}>
                   <Text style={styles.titleValue} numberOfLines={10}>
                     {item.origin_division}
-
+                    {'\n'}
                     {item.origin_service}
                   </Text>
                 </View>
@@ -157,7 +157,7 @@ export default class DocInfoScreen extends Component {
                   {/* <Text style={styles.titleValue}>ICTS SysAdd</Text> */}
                   <Text style={styles.titleValue} numberOfLines={10}>
                     {item.sender_division}
-
+                    {'\n'}
                     {item.sender_service}
                   </Text>
                 </View>

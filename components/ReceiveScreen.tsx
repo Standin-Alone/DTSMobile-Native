@@ -111,7 +111,7 @@ export default class ReceiveScreen extends Component {
             // perform axios here
             axios
               .post(
-                ipConfig.ipAddress + 'MobileApp/Mobile/receive_document',
+                ipConfig.ipAddress + '/MobileApp/Mobile/receive_document',
                 data,
               )
               .then(async response => {
